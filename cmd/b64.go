@@ -39,13 +39,11 @@ var b64Cmd = &cobra.Command{
 			encoded := enc.EncodeToString(inputBytes)
 			Echo(encoded)
 		} else if decode {
-			var decoded []byte
 			decoded, err := enc.DecodeString(string(inputBytes))
 			if err != nil {
 				return errors.Wrap(err, "decode base64")
 			}
 			Echo(string(decoded))
-			Echo(decoded)
 		} else {
 			log.Error("Please specify -e or -d")
 		}
