@@ -37,15 +37,15 @@ var b64Cmd = &cobra.Command{
 
 		if encode {
 			encoded := enc.EncodeToString(inputBytes)
-			log.Infoln(encoded)
+			Echo(encoded)
 		} else if decode {
 			var decoded []byte
 			decoded, err := enc.DecodeString(string(inputBytes))
 			if err != nil {
 				return errors.Wrap(err, "decode base64")
 			}
-			log.WithField("fmt", "string").Info(string(decoded))
-			log.WithField("fmt", "bytes").Info(decoded)
+			Echo(string(decoded))
+			Echo(decoded)
 		} else {
 			log.Error("Please specify -e or -d")
 		}

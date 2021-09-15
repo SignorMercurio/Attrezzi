@@ -16,11 +16,12 @@ limitations under the License.
 package cmd
 
 import (
+	"fmt"
+	"io"
 	"io/ioutil"
 	"os"
 
 	"github.com/pkg/errors"
-	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
@@ -28,6 +29,7 @@ var (
 	inputFile  string
 	inputBytes []byte
 	outputFile string
+	output     io.Writer = os.Stdout
 )
 
 // fmtCmd represents the fmt command
@@ -40,12 +42,10 @@ var fmtCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		output, err := getOutput()
-		if err != nil {
+		if getOutput() != nil {
 			return err
 		}
 
-		log.SetOutput(output)
 		return nil
 	},
 }
@@ -71,9 +71,8 @@ func getInput() ([]byte, error) {
 	return inputBytes, nil
 }
 
-func getOutput() (*os.File, error) {
+func getOutput() error {
 	var err error
-	output := os.Stdout
 
 	if outputFile != "" {
 		_, err = os.Stat(outputFile)
@@ -84,14 +83,15 @@ func getOutput() (*os.File, error) {
 		}
 
 		if err != nil {
-			return nil, errors.Wrap(err, "open output file")
+			return errors.Wrap(err, "open output file")
 		}
-		log.SetFormatter(&logrus.TextFormatter{
-			DisableColors: true,
-		})
 	}
 
-	return output, nil
+	return nil
+}
+
+func Echo(content interface{}) {
+	fmt.Fprintln(output, content)
 }
 
 func init() {
