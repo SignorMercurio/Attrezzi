@@ -31,8 +31,11 @@ var (
 
 // hexCmd represents the hex command
 var hexCmd = &cobra.Command{
-	Use:   "hex",
-	Short: "string to hex",
+	Use: "hex",
+	Long: `convert string to / from hex
+Example:
+	echo -n "hello" | attrezzi fmt -o out.txt hex -e
+	attrezzi fmt -i in.txt hex -d`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		var delimiter []byte
 		switch delim {

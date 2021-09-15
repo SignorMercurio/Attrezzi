@@ -30,8 +30,11 @@ var (
 
 // b64Cmd represents the b64 command
 var b64Cmd = &cobra.Command{
-	Use:   "b64",
-	Short: "base64 encode / decode",
+	Use: "b64",
+	Long: `base64 encode / decode
+Example:
+	echo -n "hello" | attrezzi fmt -o out.txt b64 -e
+	attrezzi fmt -i in.txt b64 -d`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		enc := getEncoding()
 
@@ -78,5 +81,5 @@ func init() {
 	// is called directly, e.g.:
 	b64Cmd.Flags().BoolVarP(&encode, "encode", "e", false, "Encode to base64")
 	b64Cmd.Flags().BoolVarP(&decode, "decode", "d", false, "Decode from base64")
-	b64Cmd.Flags().StringVarP(&alphabet, "alphabet", "a", "std", `Alphabet for base64, "url" for URLEncoding`)
+	b64Cmd.Flags().StringVarP(&alphabet, "alphabet", "a", "std", `Alphabet for base64, or "url" for URLEncoding`)
 }
