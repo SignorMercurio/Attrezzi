@@ -30,11 +30,12 @@ const (
 
 // binCmd represents the bin command
 var binCmd = &cobra.Command{
-	Use: "bin",
+	Use:   "bin",
+	Short: "convert string to / from binary",
 	Long: `convert string to / from binary
 Example:
-	echo -n "hello" | attrezzi fmt -o out.txt bin -e --delim=" "
-	attrezzi fmt -i in.txt bin -d`,
+	echo -n "hello" | att fmt -o out.txt bin -e --delim=" "
+	att fmt -i in.txt bin -d`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		delimiter := getDelimiter()
 		if encode {

@@ -26,11 +26,12 @@ import (
 
 // decCmd represents the dec command
 var decCmd = &cobra.Command{
-	Use: "dec",
-	Long: `convert string to / from decary
+	Use:   "dec",
+	Short: "convert string to / from decimal",
+	Long: `convert string to / from decimal
 Example:
-	echo -n "hello" | attrezzi fmt -o out.txt dec -e --delim=" "
-	attrezzi fmt -i in.txt dec -d`,
+	echo -n "hello" | att fmt -o out.txt dec -e --delim=" "
+	att fmt -i in.txt dec -d`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		delimiter := getDelimiter()
 		if encode {

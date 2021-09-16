@@ -30,11 +30,14 @@ var (
 
 // b64Cmd represents the b64 command
 var b64Cmd = &cobra.Command{
-	Use: "b64",
+	Use:   "b64",
+	Short: "base64 encode / decode",
 	Long: `base64 encode / decode
 Example:
-	echo -n "hello" | attrezzi fmt -o out.txt b64 -e
-	attrezzi fmt -i in.txt b64 -d`,
+	echo -n "hello" | att fmt -o out.txt b64 -e
+	att fmt -i in.txt b64 -d
+	echo -n "Attrezzi" | att fmt b64 -e | att fmt b64 -d
+`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		enc := getEncoding()
 

@@ -29,7 +29,7 @@ var cfgFile string
 
 // rootCmd represents the base command when called without any subcommands
 var RootCmd = &cobra.Command{
-	Use:          "attrezzi",
+	Use:          "att",
 	Short:        "A handy toolkit",
 	Long:         `Attrezzi is a CLI tool integrated with multiple features useful for hacking.`,
 	SilenceUsage: true,
