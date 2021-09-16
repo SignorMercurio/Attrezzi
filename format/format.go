@@ -31,24 +31,32 @@ var (
 	inputBytes []byte
 	outputFile string
 	output     io.Writer = os.Stdout
+	fmtCmd               = NewFmtCmd()
 )
 
-// fmtCmd represents the fmt command
-var fmtCmd = &cobra.Command{
-	Use:   "fmt",
-	Short: "fmt helps to deal with data format.",
-	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-		var err error
-		inputBytes, err = getInput()
-		if err != nil {
-			return err
-		}
-		if getOutput() != nil {
-			return err
-		}
+// NewFmtCmd represents the fmt command
+func NewFmtCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "fmt",
+		Short: "fmt helps to deal with data format.",
+		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+			var err error
+			inputBytes, err = getInput()
+			if err != nil {
+				return err
+			}
+			if getOutput() != nil {
+				return err
+			}
 
-		return nil
-	},
+			return nil
+		},
+	}
+
+	cmd.PersistentFlags().StringVarP(&inputFile, "input", "i", "", "Read input from file")
+	cmd.PersistentFlags().StringVarP(&outputFile, "output", "o", "", "Write output to file")
+
+	return cmd
 }
 
 // getInput gets the input []byte
@@ -97,14 +105,4 @@ func NoActionSpecified() {
 
 func init() {
 	cmd.RootCmd.AddCommand(fmtCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	fmtCmd.PersistentFlags().StringVarP(&inputFile, "input", "i", "", "Read input from file")
-	fmtCmd.PersistentFlags().StringVarP(&outputFile, "output", "o", "", "Write output to file")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
 }

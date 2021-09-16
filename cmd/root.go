@@ -25,20 +25,27 @@ import (
 	"github.com/spf13/viper"
 )
 
-var cfgFile string
+var (
+	cfgFile string
+	RootCmd = NewRootCmd()
+	Log     = logrus.New()
+)
 
-// rootCmd represents the base command when called without any subcommands
-var RootCmd = &cobra.Command{
-	Use:          "att",
-	Short:        "A handy toolkit",
-	Long:         `Attrezzi is a CLI tool integrated with multiple features useful for hacking.`,
-	SilenceUsage: true,
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
-	// Run: func(cmd *cobra.Command, args []string) { },
+// NewRootCmd represents the base command when called without any subcommands
+func NewRootCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:          "att",
+		Short:        "A handy toolkit",
+		Long:         `Attrezzi is a CLI tool integrated with multiple features useful for hacking.`,
+		SilenceUsage: true,
+		// Uncomment the following line if your bare application
+		// has an action associated with it:
+		// Run: func(cmd *cobra.Command, args []string) { },
+	}
+	cmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.attrezzi.yaml)")
+
+	return cmd
 }
-
-var Log = logrus.New()
 
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
@@ -52,15 +59,6 @@ func Execute() {
 
 func init() {
 	cobra.OnInitialize(initConfig)
-
-	// Here you will define your flags and configuration settings.
-	// Cobra supports persistent flags, which, if defined here,
-	// will be global for your application.
-
-	RootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.attrezzi.yaml)")
-
-	// Cobra also supports local flags, which will only run
-	// when this action is called directly.
 }
 
 // initConfig reads in config file and ENV variables if set.

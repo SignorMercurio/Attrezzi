@@ -28,33 +28,39 @@ var (
 	alphabet string
 )
 
-// b64Cmd represents the b64 command
-var b64Cmd = &cobra.Command{
-	Use:   "b64",
-	Short: "base64 encode / decode",
-	Long: `base64 encode / decode
+// NewB64Cmd represents the b64 command
+func NewB64Cmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "b64",
+		Short: "base64 encode / decode",
+		Long: `base64 encode / decode
 Example:
 	echo -n "hello" | att fmt -o out.txt b64 -e
 	att fmt -i in.txt b64 -d
-	echo -n "Attrezzi" | att fmt b64 -e | att fmt b64 -d
-`,
-	RunE: func(cmd *cobra.Command, args []string) error {
-		enc := getEncoding()
+	echo -n "Attrezzi" | att fmt b64 -e | att fmt b64 -d`,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			enc := getEncoding()
 
-		if encode {
-			encoded := enc.EncodeToString(inputBytes)
-			Echo(encoded)
-		} else if decode {
-			decoded, err := decodeBase64(enc)
-			if err != nil {
-				return err
+			if encode {
+				encoded := enc.EncodeToString(inputBytes)
+				Echo(encoded)
+			} else if decode {
+				decoded, err := decodeBase64(enc)
+				if err != nil {
+					return err
+				}
+				Echo(decoded)
+			} else {
+				NoActionSpecified()
 			}
-			Echo(decoded)
-		} else {
-			NoActionSpecified()
-		}
-		return nil
-	},
+			return nil
+		},
+	}
+	cmd.Flags().BoolVarP(&encode, "encode", "e", false, "Encode to base64")
+	cmd.Flags().BoolVarP(&decode, "decode", "d", false, "Decode from base64")
+	cmd.Flags().StringVarP(&alphabet, "alphabet", "a", "std", `Alphabet for base64, or "url" for URLEncoding`)
+
+	return cmd
 }
 
 // getEncoding gets the base64 encoding from user input
@@ -82,17 +88,5 @@ func decodeBase64(enc *base64.Encoding) (string, error) {
 }
 
 func init() {
-	fmtCmd.AddCommand(b64Cmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// b64Cmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	b64Cmd.Flags().BoolVarP(&encode, "encode", "e", false, "Encode to base64")
-	b64Cmd.Flags().BoolVarP(&decode, "decode", "d", false, "Decode from base64")
-	b64Cmd.Flags().StringVarP(&alphabet, "alphabet", "a", "std", `Alphabet for base64, or "url" for URLEncoding`)
+	fmtCmd.AddCommand(NewB64Cmd())
 }

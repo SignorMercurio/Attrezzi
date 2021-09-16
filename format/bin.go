@@ -28,35 +28,43 @@ const (
 	byteLen = 8
 )
 
-// binCmd represents the bin command
-var binCmd = &cobra.Command{
-	Use:   "bin",
-	Short: "convert string to / from binary",
-	Long: `convert string to / from binary
+// NewBinCmd represents the bin command
+func NewBinCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "bin",
+		Short: "convert string to / from binary",
+		Long: `convert string to / from binary
 Example:
 	echo -n "hello" | att fmt -o out.txt bin -e --delim=" "
 	att fmt -i in.txt bin -d`,
-	RunE: func(cmd *cobra.Command, args []string) error {
-		delimiter := getDelimiter()
-		if encode {
-			encoded := encodeToBin(inputBytes)
-			Echo(insertInto(encoded, byteLen, delimiter))
-		} else if decode {
-			arr := getDecodeArr(delimiter)
-			err := bin2hex(arr)
-			if err != nil {
-				return err
+		RunE: func(cmd *cobra.Command, args []string) error {
+			delimiter := getDelimiter()
+			if encode {
+				encoded := encodeToBin(inputBytes)
+				Echo(insertInto(encoded, byteLen, delimiter))
+			} else if decode {
+				arr := getDecodeArr(delimiter)
+				err := bin2hex(arr)
+				if err != nil {
+					return err
+				}
+				decoded, err := decodeHex(arr)
+				if err != nil {
+					return err
+				}
+				Echo(decoded)
+			} else {
+				NoActionSpecified()
 			}
-			decoded, err := decodeHex(arr)
-			if err != nil {
-				return err
-			}
-			Echo(decoded)
-		} else {
-			NoActionSpecified()
-		}
-		return nil
-	},
+			return nil
+		},
+	}
+	cmd.Flags().BoolVarP(&encode, "encode", "e", false, "Encode to binary")
+	cmd.Flags().BoolVarP(&decode, "decode", "d", false, "Decode from binary")
+	cmd.Flags().StringVar(&delim, "delim", "", "Delimiter")
+	cmd.Flags().BoolVarP(&delim_prefix, "prefix", "p", false, "Whether the delimiter is a prefix")
+
+	return cmd
 }
 
 // encodeToBin converts a []byte to a binary string
@@ -83,18 +91,5 @@ func bin2hex(arr []string) error {
 }
 
 func init() {
-	fmtCmd.AddCommand(binCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// binCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	binCmd.Flags().BoolVarP(&encode, "encode", "e", false, "Encode to binary")
-	binCmd.Flags().BoolVarP(&decode, "decode", "d", false, "Decode from binary")
-	binCmd.Flags().StringVar(&delim, "delim", "", "Delimiter")
-	binCmd.Flags().BoolVarP(&delim_prefix, "prefix", "p", false, "Whether the delimiter is a prefix")
+	fmtCmd.AddCommand(NewBinCmd())
 }

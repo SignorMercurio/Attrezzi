@@ -24,35 +24,43 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// decCmd represents the dec command
-var decCmd = &cobra.Command{
-	Use:   "dec",
-	Short: "convert string to / from decimal",
-	Long: `convert string to / from decimal
+// NewDecCmd represents the dec command
+func NewDecCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "dec",
+		Short: "convert string to / from decimal",
+		Long: `convert string to / from decimal
 Example:
 	echo -n "hello" | att fmt -o out.txt dec -e --delim=" "
 	att fmt -i in.txt dec -d`,
-	RunE: func(cmd *cobra.Command, args []string) error {
-		delimiter := getDelimiter()
-		if encode {
-			encoded := encodeToDec(inputBytes, delimiter)
-			Echo(encoded)
-		} else if decode {
-			arr := getDecodeArr(delimiter)
-			err := dec2hex(arr)
-			if err != nil {
-				return err
+		RunE: func(cmd *cobra.Command, args []string) error {
+			delimiter := getDelimiter()
+			if encode {
+				encoded := encodeToDec(inputBytes, delimiter)
+				Echo(encoded)
+			} else if decode {
+				arr := getDecodeArr(delimiter)
+				err := dec2hex(arr)
+				if err != nil {
+					return err
+				}
+				decoded, err := decodeHex(arr)
+				if err != nil {
+					return err
+				}
+				Echo(decoded)
+			} else {
+				NoActionSpecified()
 			}
-			decoded, err := decodeHex(arr)
-			if err != nil {
-				return err
-			}
-			Echo(decoded)
-		} else {
-			NoActionSpecified()
-		}
-		return nil
-	},
+			return nil
+		},
+	}
+	cmd.Flags().BoolVarP(&encode, "encode", "e", false, "Encode to decimal")
+	cmd.Flags().BoolVarP(&decode, "decode", "d", false, "Decode from decimal")
+	cmd.Flags().StringVar(&delim, "delim", "", "Delimiter")
+	cmd.Flags().BoolVarP(&delim_prefix, "prefix", "p", false, "Whether the delimiter is a prefix")
+
+	return cmd
 }
 
 // encodeTodec converts a []byte to a decimal string
@@ -84,18 +92,5 @@ func dec2hex(arr []string) error {
 }
 
 func init() {
-	fmtCmd.AddCommand(decCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// decCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	decCmd.Flags().BoolVarP(&encode, "encode", "e", false, "Encode to decimal")
-	decCmd.Flags().BoolVarP(&decode, "decode", "d", false, "Decode from decimal")
-	decCmd.Flags().StringVar(&delim, "delim", "", "Delimiter")
-	decCmd.Flags().BoolVarP(&delim_prefix, "prefix", "p", false, "Whether the delimiter is a prefix")
+	fmtCmd.AddCommand(NewDecCmd())
 }

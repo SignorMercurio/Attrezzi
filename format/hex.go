@@ -29,31 +29,39 @@ var (
 	delim_prefix bool
 )
 
-// hexCmd represents the hex command
-var hexCmd = &cobra.Command{
-	Use:   "hex",
-	Short: "convert string to / from hex",
-	Long: `convert string to / from hex
+// NewHexCmd represents the hex command
+func NewHexCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "hex",
+		Short: "convert string to / from hex",
+		Long: `convert string to / from hex
 Example:
 	echo -n "hello" | att fmt -o out.txt hex -e --delim="0x" -p
 	att fmt -i in.txt hex -d`,
-	RunE: func(cmd *cobra.Command, args []string) error {
-		delimiter := getDelimiter()
-		if encode {
-			encoded := hex.EncodeToString(inputBytes)
-			Echo(insertInto(encoded, 2, delimiter))
-		} else if decode {
-			arr := getDecodeArr(delimiter)
-			decoded, err := decodeHex(arr)
-			if err != nil {
-				return err
+		RunE: func(cmd *cobra.Command, args []string) error {
+			delimiter := getDelimiter()
+			if encode {
+				encoded := hex.EncodeToString(inputBytes)
+				Echo(insertInto(encoded, 2, delimiter))
+			} else if decode {
+				arr := getDecodeArr(delimiter)
+				decoded, err := decodeHex(arr)
+				if err != nil {
+					return err
+				}
+				Echo(decoded)
+			} else {
+				NoActionSpecified()
 			}
-			Echo(decoded)
-		} else {
-			NoActionSpecified()
-		}
-		return nil
-	},
+			return nil
+		},
+	}
+	cmd.Flags().BoolVarP(&encode, "encode", "e", false, "Encode to hex")
+	cmd.Flags().BoolVarP(&decode, "decode", "d", false, "Decode from hex")
+	cmd.Flags().StringVar(&delim, "delim", "", "Delimiter")
+	cmd.Flags().BoolVarP(&delim_prefix, "prefix", "p", false, "Whether the delimiter is a prefix")
+
+	return cmd
 }
 
 // getDelimiter gets the delimiter from user input, mainly dealing with LF & CRLF
@@ -116,18 +124,5 @@ func insertInto(s string, interval int, delimiter []byte) string {
 }
 
 func init() {
-	fmtCmd.AddCommand(hexCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// hexCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	hexCmd.Flags().BoolVarP(&encode, "encode", "e", false, "Encode to hex")
-	hexCmd.Flags().BoolVarP(&decode, "decode", "d", false, "Decode from hex")
-	hexCmd.Flags().StringVar(&delim, "delim", "", "Delimiter")
-	hexCmd.Flags().BoolVarP(&delim_prefix, "prefix", "p", false, "Whether the delimiter is a prefix")
+	fmtCmd.AddCommand(NewHexCmd())
 }
