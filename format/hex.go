@@ -73,6 +73,8 @@ func getDelimiter() []byte {
 		delimiter = []byte("\n")
 	case `\r\n`:
 		delimiter = []byte("\r\n")
+	case "":
+		delimiter = nil // for bin & dec
 	default:
 		delimiter = []byte(delim)
 	}

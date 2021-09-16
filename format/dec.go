@@ -35,6 +35,10 @@ Example:
 	att fmt -i in.txt dec -d`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			delimiter := getDelimiter()
+			if delimiter == nil {
+				EmptyDelimiter()
+			}
+
 			if encode {
 				encoded := encodeToDec(inputBytes, delimiter)
 				Echo(encoded)

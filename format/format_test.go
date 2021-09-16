@@ -88,24 +88,6 @@ func TestHexDecodeWith0x(t *testing.T) {
 	checkResult(out, expected, t)
 }
 
-func TestBinEncode(t *testing.T) {
-	in := "./test/in.txt"
-	out := "./test/out.txt"
-	expected := "0110100001100101011011000110110001101111001000000111011101101111011100100110110001100100"
-	exec("fmt", "-i", in, "-o", out, "bin", "-e")
-	checkResult(out, expected, t)
-}
-
-func TestBinDecode(t *testing.T) {
-	in := "./test/in.txt"
-	out := "./test/out.txt"
-	expected := "hello world"
-	exec("fmt", "-i", in, "-o", out, "bin", "-e")
-	exec("fmt", "-i", out, "-o", out, "bin", "-d")
-
-	checkResult(out, expected, t)
-}
-
 func TestBinEncodeWithSpace(t *testing.T) {
 	in := "./test/in.txt"
 	out := "./test/out.txt"
@@ -120,24 +102,6 @@ func TestBinDecodeWithSpace(t *testing.T) {
 	expected := "hello world"
 	exec("fmt", "-i", in, "-o", out, "bin", "-e", "--delim", " ")
 	exec("fmt", "-i", out, "-o", out, "bin", "-d", "--delim", " ")
-
-	checkResult(out, expected, t)
-}
-
-func TestDecEncode(t *testing.T) {
-	in := "./test/in.txt"
-	out := "./test/out.txt"
-	expected := "10410110810811132119111114108100"
-	exec("fmt", "-i", in, "-o", out, "dec", "-e")
-	checkResult(out, expected, t)
-}
-
-func TestDecDecode(t *testing.T) {
-	in := "./test/in.txt"
-	out := "./test/out.txt"
-	expected := "hello world"
-	exec("fmt", "-i", in, "-o", out, "dec", "-e")
-	exec("fmt", "-i", out, "-o", out, "dec", "-d")
 
 	checkResult(out, expected, t)
 }

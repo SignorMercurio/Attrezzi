@@ -39,6 +39,10 @@ Example:
 	att fmt -i in.txt bin -d`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			delimiter := getDelimiter()
+			if delimiter == nil {
+				EmptyDelimiter()
+			}
+
 			if encode {
 				encoded := encodeToBin(inputBytes)
 				Echo(insertInto(encoded, byteLen, delimiter))
@@ -61,7 +65,7 @@ Example:
 	}
 	cmd.Flags().BoolVarP(&encode, "encode", "e", false, "Encode to binary")
 	cmd.Flags().BoolVarP(&decode, "decode", "d", false, "Decode from binary")
-	cmd.Flags().StringVar(&delim, "delim", "", "Delimiter")
+	cmd.Flags().StringVar(&delim, "delim", " ", "Delimiter")
 	cmd.Flags().BoolVarP(&delim_prefix, "prefix", "p", false, "Whether the delimiter is a prefix")
 
 	return cmd

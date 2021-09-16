@@ -103,6 +103,10 @@ func NoActionSpecified() {
 	cmd.Log.Error("No action specified. Please specify -e or -d")
 }
 
+func EmptyDelimiter() {
+	cmd.Log.Error("Empty delimiter is not allowed in this module.")
+}
+
 func init() {
 	cmd.RootCmd.AddCommand(fmtCmd)
 }
