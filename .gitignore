@@ -1,4 +1,5 @@
-bin/
+bin
 .vscode
-*.txt
+/*.txt
+out.txt
 *.png
