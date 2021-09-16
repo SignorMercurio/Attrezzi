@@ -77,13 +77,7 @@ func getOutput() error {
 	var err error
 
 	if outputFile != "" {
-		_, err = os.Stat(outputFile)
-		if err != nil && os.IsNotExist(err) {
-			output, err = os.Create(outputFile)
-		} else {
-			output, err = os.OpenFile(outputFile, os.O_APPEND|os.O_WRONLY, os.ModeAppend)
-		}
-
+		output, err = os.OpenFile(outputFile, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
 		if err != nil {
 			return errors.Wrap(err, "open output file")
 		}
@@ -93,7 +87,7 @@ func getOutput() error {
 }
 
 func Echo(content interface{}) {
-	fmt.Fprintln(output, content)
+	fmt.Fprint(output, content)
 }
 
 func NoActionSpecified() {
