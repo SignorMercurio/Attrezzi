@@ -13,7 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-package cmd
+package format
 
 import (
 	"bytes"
@@ -76,6 +76,10 @@ func getDecodeArr(delimiter []byte) []string {
 	arr := strings.Split(string(inputBytes), string(delimiter))
 	if arr[0] == "" {
 		arr = arr[1:]
+	}
+	last := len(arr) - 1
+	if arr[last] == "" {
+		arr = arr[:last]
 	}
 	return arr
 }

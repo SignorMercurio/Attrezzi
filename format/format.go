@@ -13,7 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-package cmd
+package format
 
 import (
 	"fmt"
@@ -21,6 +21,7 @@ import (
 	"io/ioutil"
 	"os"
 
+	"github.com/SignorMercurio/attrezzi/cmd"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 )
@@ -91,11 +92,11 @@ func Echo(content interface{}) {
 }
 
 func NoActionSpecified() {
-	log.Error("No action specified. Please specify -e or -d")
+	cmd.Log.Error("No action specified. Please specify -e or -d")
 }
 
 func init() {
-	rootCmd.AddCommand(fmtCmd)
+	cmd.RootCmd.AddCommand(fmtCmd)
 
 	// Here you will define your flags and configuration settings.
 

@@ -13,7 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-package cmd
+package format
 
 import (
 	"bytes"
@@ -24,25 +24,21 @@ import (
 	"github.com/spf13/cobra"
 )
 
-const (
-	byteLen = 8
-)
-
-// binCmd represents the bin command
-var binCmd = &cobra.Command{
-	Use: "bin",
-	Long: `convert string to / from binary
+// decCmd represents the dec command
+var decCmd = &cobra.Command{
+	Use: "dec",
+	Long: `convert string to / from decary
 Example:
-	echo -n "hello" | attrezzi fmt -o out.txt bin -e --delim=" "
-	attrezzi fmt -i in.txt bin -d`,
+	echo -n "hello" | attrezzi fmt -o out.txt dec -e --delim=" "
+	attrezzi fmt -i in.txt dec -d`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		delimiter := getDelimiter()
 		if encode {
-			encoded := encodeToBin(inputBytes)
-			Echo(insertInto(encoded, byteLen, delimiter))
+			encoded := encodeToDec(inputBytes, delimiter)
+			Echo(encoded)
 		} else if decode {
 			arr := getDecodeArr(delimiter)
-			err := bin2hex(arr)
+			err := dec2hex(arr)
 			if err != nil {
 				return err
 			}
@@ -58,23 +54,28 @@ Example:
 	},
 }
 
-// encodeToBin converts a []byte to a binary string
-func encodeToBin(src []byte) string {
+// encodeTodec converts a []byte to a decimal string
+func encodeToDec(src []byte, delimiter []byte) string {
 	buf := bytes.NewBuffer([]byte{})
 
+	if delim_prefix {
+		buf.Write(delimiter)
+	}
+
 	for _, v := range src {
-		buf.WriteString(fmt.Sprintf("%08b", v))
+		buf.WriteString(fmt.Sprintf("%d", v))
+		buf.Write(delimiter)
 	}
 
 	return buf.String()
 }
 
-// bin2hex converts a slice of binary string to a slice of hex string
-func bin2hex(arr []string) error {
+// dec2hex converts a slice of decimal string to a slice of hex string
+func dec2hex(arr []string) error {
 	for i, v := range arr {
-		s, err := strconv.ParseInt(v, 2, 64)
+		s, err := strconv.ParseInt(v, 10, 64)
 		if err != nil {
-			return errors.Wrap(err, "convert binary to hex")
+			return errors.Wrap(err, "convert decimal to hex")
 		}
 		arr[i] = strconv.FormatInt(s, 16)
 	}
@@ -82,18 +83,18 @@ func bin2hex(arr []string) error {
 }
 
 func init() {
-	fmtCmd.AddCommand(binCmd)
+	fmtCmd.AddCommand(decCmd)
 
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
-	// binCmd.PersistentFlags().String("foo", "", "A help for foo")
+	// decCmd.PersistentFlags().String("foo", "", "A help for foo")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	binCmd.Flags().BoolVarP(&encode, "encode", "e", false, "Encode to binary")
-	binCmd.Flags().BoolVarP(&decode, "decode", "d", false, "Decode from binary")
-	binCmd.Flags().StringVar(&delim, "delim", "", "Delimiter")
-	binCmd.Flags().BoolVarP(&delim_prefix, "prefix", "p", false, "Whether the delimiter is a prefix")
+	decCmd.Flags().BoolVarP(&encode, "encode", "e", false, "Encode to decimal")
+	decCmd.Flags().BoolVarP(&decode, "decode", "d", false, "Decode from decimal")
+	decCmd.Flags().StringVar(&delim, "delim", "", "Delimiter")
+	decCmd.Flags().BoolVarP(&delim_prefix, "prefix", "p", false, "Whether the delimiter is a prefix")
 }

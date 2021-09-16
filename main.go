@@ -15,7 +15,10 @@ limitations under the License.
 */
 package main
 
-import "github.com/SignorMercurio/attrezzi/cmd"
+import (
+	"github.com/SignorMercurio/attrezzi/cmd"
+	_ "github.com/SignorMercurio/attrezzi/format"
+)
 
 func main() {
 	cmd.Execute()
