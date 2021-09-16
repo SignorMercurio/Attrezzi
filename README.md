@@ -7,8 +7,8 @@ Attrezzi is a CLI tool integrated with multiple features useful for hacking.
 - [ ] `fmt` | deal with data format
   - [x] `b64` | base64 encode / decode
   - [x] `hex` | convert string to / from hex
-  - [ ] `bin` | convert string to / from binary
-  - [ ] `dec` | convert string to / from decimal
+  - [x] `bin` | convert string to / from binary
+  - [x] `dec` | convert string to / from decimal
   - [ ] `url` | URL encode / decode
   - [ ] `html` | HTML Entity encode / decode
   - [ ] `uni` | Unicode conversion
