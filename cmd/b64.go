@@ -42,18 +42,19 @@ Example:
 			encoded := enc.EncodeToString(inputBytes)
 			Echo(encoded)
 		} else if decode {
-			decoded, err := enc.DecodeString(string(inputBytes))
+			decoded, err := decodeBase64(enc)
 			if err != nil {
-				return errors.Wrap(err, "decode base64")
+				return err
 			}
-			Echo(string(decoded))
+			Echo(decoded)
 		} else {
-			log.Error("Please specify -e or -d")
+			NoActionSpecified()
 		}
 		return nil
 	},
 }
 
+// getEncoding gets the base64 encoding from user input
 func getEncoding() *base64.Encoding {
 	var enc *base64.Encoding
 	switch alphabet {
@@ -66,6 +67,15 @@ func getEncoding() *base64.Encoding {
 	}
 
 	return enc
+}
+
+// decodeBase64 converts the inputBytes to a decoded string
+func decodeBase64(enc *base64.Encoding) (string, error) {
+	decoded, err := enc.DecodeString(string(inputBytes))
+	if err != nil {
+		return "", errors.Wrap(err, "decode base64")
+	}
+	return string(decoded), nil
 }
 
 func init() {

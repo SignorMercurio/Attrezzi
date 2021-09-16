@@ -50,6 +50,7 @@ var fmtCmd = &cobra.Command{
 	},
 }
 
+// getInput gets the input []byte
 func getInput() ([]byte, error) {
 	var err error
 	var inputBytes []byte
@@ -71,6 +72,7 @@ func getInput() ([]byte, error) {
 	return inputBytes, nil
 }
 
+// getOutput gets the output fd
 func getOutput() error {
 	var err error
 
@@ -92,6 +94,10 @@ func getOutput() error {
 
 func Echo(content interface{}) {
 	fmt.Fprintln(output, content)
+}
+
+func NoActionSpecified() {
+	log.Error("No action specified. Please specify -e or -d")
 }
 
 func init() {

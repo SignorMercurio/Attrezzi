@@ -34,40 +34,63 @@ var hexCmd = &cobra.Command{
 	Use: "hex",
 	Long: `convert string to / from hex
 Example:
-	echo -n "hello" | attrezzi fmt -o out.txt hex -e
+	echo -n "hello" | attrezzi fmt -o out.txt hex -e --delim=" "
 	attrezzi fmt -i in.txt hex -d`,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		var delimiter []byte
-		switch delim {
-		case `\n`:
-			delimiter = []byte("\n")
-		case `\r\n`:
-			delimiter = []byte("\r\n")
-		default:
-			delimiter = []byte(delim)
-		}
-
+		delimiter := getDelimiter()
 		if encode {
 			encoded := hex.EncodeToString(inputBytes)
 			Echo(insertInto(encoded, 2, delimiter))
 		} else if decode {
-			arr := strings.Split(string(inputBytes), string(delimiter))
-			if arr[0] == "" {
-				arr = arr[1:]
-			}
-			toDecode := strings.Join(arr, "")
-			decoded, err := hex.DecodeString(toDecode)
+			arr := getDecodeArr(delimiter)
+			decoded, err := decodeHex(arr)
 			if err != nil {
-				return errors.Wrap(err, "decode hex")
+				return err
 			}
-			Echo(string(decoded))
+			Echo(decoded)
 		} else {
-			log.Error("Please specify -e or -d")
+			NoActionSpecified()
 		}
 		return nil
 	},
 }
 
+// getDelimiter gets the delimiter from user input, mainly dealing with LF & CRLF
+func getDelimiter() []byte {
+	var delimiter []byte
+
+	switch delim {
+	case `\n`:
+		delimiter = []byte("\n")
+	case `\r\n`:
+		delimiter = []byte("\r\n")
+	default:
+		delimiter = []byte(delim)
+	}
+
+	return delimiter
+}
+
+// getDecodeArr gets a []string splitted with the delimiter, mainly dealing with prefix
+func getDecodeArr(delimiter []byte) []string {
+	arr := strings.Split(string(inputBytes), string(delimiter))
+	if arr[0] == "" {
+		arr = arr[1:]
+	}
+	return arr
+}
+
+// decodeHex converts a slice of hex string to a decoded string
+func decodeHex(arr []string) (string, error) {
+	decoded, err := hex.DecodeString(strings.Join(arr, ""))
+	if err != nil {
+		return "", errors.Wrap(err, "decode hex")
+	}
+
+	return string(decoded), nil
+}
+
+// insertInto inserts the delimiter into the string every [interval] characters
 func insertInto(s string, interval int, delimiter []byte) string {
 	var buffer bytes.Buffer
 	before := interval - 1
