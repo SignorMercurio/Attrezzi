@@ -10,6 +10,7 @@ Attrezzi is a CLI tool integrated with multiple features useful for hacking.
   - [x] `b58` | Base58 encode / decode
   - [x] `b62` | Base62 encode / decode
   - [x] `b85` | Base85 encode / decode
+  - [x] `bsx` | BaseX encode / decode
   - [x] `hex` | convert string to / from hex
   - [x] `bin` | convert string to / from binary
   - [x] `dec` | convert string to / from decimal

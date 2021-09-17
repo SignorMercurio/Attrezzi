@@ -75,6 +75,78 @@ func TestB64StrangePadding(t *testing.T) {
 	checkResult(src, t)
 }
 
+func TestB32(t *testing.T) {
+	dst := "NBSWY3DPEB3W64TMMQ======"
+	exec(in, "b32", "-e")
+	checkResult(dst, t)
+
+	exec(out, "b32", "-d")
+	checkResult(src, t)
+}
+
+func TestB32Alphabet(t *testing.T) {
+	dst := "nbswy3dpeb3w64tmmq======"
+	exec(in, "b32", "-e", "-a", "abcdefghijklmnopqrstuvwxyz234567")
+	checkResult(dst, t)
+
+	exec(out, "b32", "-d", "-a", "abcdefghijklmnopqrstuvwxyz234567")
+	checkResult(src, t)
+}
+
+func TestB58(t *testing.T) {
+	dst := "StV1DL6CwTryKyV"
+	exec(in, "b58", "-e")
+	checkResult(dst, t)
+
+	exec(out, "b58", "-d")
+	checkResult(src, t)
+}
+
+func TestB58Flickr(t *testing.T) {
+	dst := "rTu1dk6cWsRYjYu"
+	exec(in, "b58", "-e", "-a", "flickr")
+	checkResult(dst, t)
+
+	exec(out, "b58", "-d", "-a", "flickr")
+	checkResult(src, t)
+}
+
+func TestB85(t *testing.T) {
+	dst := "BOu!rD]j7BEbo7"
+	exec(in, "b85", "-e")
+	checkResult(dst, t)
+
+	exec(out, "b85", "-d")
+	checkResult(src, t)
+}
+
+func TestBsx62(t *testing.T) {
+	dst := "AAwf93rvy4aWQVw"
+	exec(in, "bsx", "-e")
+	checkResult(dst, t)
+
+	exec(out, "bsx", "-d")
+	checkResult(src, t)
+}
+
+func TestBsx16(t *testing.T) {
+	dst := "68656C6C6F20776F726C64"
+	exec(in, "bsx", "-b", "16", "-e")
+	checkResult(dst, t)
+
+	exec(out, "bsx", "-b", "16", "-d")
+	checkResult(src, t)
+}
+
+func TestBsx16WithAlphabetOnly(t *testing.T) {
+	dst := "68656c6c6f20776f726c64"
+	exec(in, "bsx", "-e", "-a", "0123456789abcdef")
+	checkResult(dst, t)
+
+	exec(out, "bsx", "-d", "-a", "0123456789abcdef")
+	checkResult(src, t)
+}
+
 func TestHex(t *testing.T) {
 	dst := "68656c6c6f20776f726c64"
 	exec(in, "hex", "-e")
@@ -152,59 +224,5 @@ func TestUni(t *testing.T) {
 	checkResult(dst, t)
 
 	exec(out, "uni", "-d")
-	checkResult(src, t)
-}
-
-func TestB32(t *testing.T) {
-	dst := "NBSWY3DPEB3W64TMMQ======"
-	exec(in, "b32", "-e")
-	checkResult(dst, t)
-
-	exec(out, "b32", "-d")
-	checkResult(src, t)
-}
-
-func TestB32Alphabet(t *testing.T) {
-	dst := "nbswy3dpeb3w64tmmq======"
-	exec(in, "b32", "-e", "-a", "abcdefghijklmnopqrstuvwxyz234567")
-	checkResult(dst, t)
-
-	exec(out, "b32", "-d", "-a", "abcdefghijklmnopqrstuvwxyz234567")
-	checkResult(src, t)
-}
-
-func TestB58(t *testing.T) {
-	dst := "StV1DL6CwTryKyV"
-	exec(in, "b58", "-e")
-	checkResult(dst, t)
-
-	exec(out, "b58", "-d")
-	checkResult(src, t)
-}
-
-func TestB58Flickr(t *testing.T) {
-	dst := "rTu1dk6cWsRYjYu"
-	exec(in, "b58", "-e", "-a", "flickr")
-	checkResult(dst, t)
-
-	exec(out, "b58", "-d", "-a", "flickr")
-	checkResult(src, t)
-}
-
-func TestBsx62(t *testing.T) {
-	dst := "AAwf93rvy4aWQVw"
-	exec(in, "bsx", "-e")
-	checkResult(dst, t)
-
-	exec(out, "bsx", "-d")
-	checkResult(src, t)
-}
-
-func TestB85(t *testing.T) {
-	dst := "BOu!rD]j7BEbo7"
-	exec(in, "b85", "-e")
-	checkResult(dst, t)
-
-	exec(out, "b85", "-d")
 	checkResult(src, t)
 }
