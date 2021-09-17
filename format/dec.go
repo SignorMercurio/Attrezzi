@@ -62,7 +62,7 @@ Example:
 	}
 	cmd.Flags().BoolVarP(&encode, "encode", "e", false, "Encode to decimal")
 	cmd.Flags().BoolVarP(&decode, "decode", "d", false, "Decode from decimal")
-	cmd.Flags().StringVar(&delim, "delim", " ", `Delimiter. e.g. " ", "\n", "\r\n", ",", etc.`)
+	cmd.Flags().StringVar(&delim, "delim", "", `Delimiter. e.g. " ", "\n", "\r\n", ",", etc.`)
 	cmd.Flags().BoolVarP(&delim_prefix, "prefix", "p", false, "Whether the delimiter is a prefix")
 
 	return cmd

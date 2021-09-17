@@ -23,6 +23,7 @@ func exec(args ...string) {
 		NewDecCmd(),
 		NewUrlCmd(),
 		NewHtmCmd(),
+		NewUniCmd(),
 	)
 	rootCmd.AddCommand(fmtCmd)
 
@@ -118,5 +119,16 @@ func TestHTML(t *testing.T) {
 	checkResult(dst, t)
 
 	exec(out, "htm", "-d")
+	checkResult(src, t)
+}
+
+func TestUni(t *testing.T) {
+	in := "./test/in_uni.txt"
+	src := "hello 世界"
+	dst := `hello \u4e16\u754c`
+	exec(in, "uni", "-e")
+	checkResult(dst, t)
+
+	exec(out, "uni", "-d")
 	checkResult(src, t)
 }
