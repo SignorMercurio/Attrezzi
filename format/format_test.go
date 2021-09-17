@@ -24,6 +24,7 @@ func exec(args ...string) {
 		NewUrlCmd(),
 		NewHtmCmd(),
 		NewUniCmd(),
+		NewB32Cmd(),
 	)
 	rootCmd.AddCommand(fmtCmd)
 
@@ -50,6 +51,24 @@ func TestB64(t *testing.T) {
 	checkResult(dst, t)
 
 	exec(out, "b64", "-d")
+	checkResult(src, t)
+}
+
+func TestB64NoPadding(t *testing.T) {
+	dst := "aGVsbG8gd29ybGQ"
+	exec(in, "b64", "-e", "-p", "")
+	checkResult(dst, t)
+
+	exec(out, "b64", "-d", "-p", "")
+	checkResult(src, t)
+}
+
+func TestB64StrangePadding(t *testing.T) {
+	dst := "aGVsbG8gd29ybGQ?"
+	exec(in, "b64", "-e", "-p", "?")
+	checkResult(dst, t)
+
+	exec(out, "b64", "-d", "-p", "?")
 	checkResult(src, t)
 }
 
@@ -130,5 +149,23 @@ func TestUni(t *testing.T) {
 	checkResult(dst, t)
 
 	exec(out, "uni", "-d")
+	checkResult(src, t)
+}
+
+func TestB32(t *testing.T) {
+	dst := "NBSWY3DPEB3W64TMMQ======"
+	exec(in, "b32", "-e")
+	checkResult(dst, t)
+
+	exec(out, "b32", "-d")
+	checkResult(src, t)
+}
+
+func TestB32Alphabet(t *testing.T) {
+	dst := "nbswy3dpeb3w64tmmq======"
+	exec(in, "b32", "-e", "-a", "abcdefghijklmnopqrstuvwxyz234567")
+	checkResult(dst, t)
+
+	exec(out, "b32", "-d", "-a", "abcdefghijklmnopqrstuvwxyz234567")
 	checkResult(src, t)
 }

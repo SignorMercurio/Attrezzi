@@ -26,6 +26,7 @@ var (
 	encode   bool
 	decode   bool
 	alphabet string
+	padding  string
 )
 
 // NewB64Cmd represents the b64 command
@@ -39,7 +40,7 @@ Example:
 	att fmt -i in.txt b64 -d
 	echo -n "Attrezzi" | att fmt b64 -e | att fmt b64 -d`,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			enc := getEncoding()
+			enc := getB64Encoding()
 
 			if encode {
 				encoded := enc.EncodeToString(inputBytes)
@@ -58,13 +59,14 @@ Example:
 	}
 	cmd.Flags().BoolVarP(&encode, "encode", "e", false, "Encode to base64")
 	cmd.Flags().BoolVarP(&decode, "decode", "d", false, "Decode from base64")
-	cmd.Flags().StringVarP(&alphabet, "alphabet", "a", "std", `Alphabet for base64, or "url" for URLEncoding`)
+	cmd.Flags().StringVarP(&alphabet, "alphabet", "a", "std", `Alphabet for base64, or "url" for URLEncoding (See RFC4648)`)
+	cmd.Flags().StringVarP(&padding, "padding", "p", "=", `Padding for base64, or "" for no padding`)
 
 	return cmd
 }
 
-// getEncoding gets the base64 encoding from user input
-func getEncoding() *base64.Encoding {
+// getB64Encoding gets the base64 encoding from user input
+func getB64Encoding() *base64.Encoding {
 	var enc *base64.Encoding
 	switch alphabet {
 	case "std":
@@ -75,7 +77,11 @@ func getEncoding() *base64.Encoding {
 		enc = base64.NewEncoding(alphabet)
 	}
 
-	return enc
+	if padding == "" {
+		return enc.WithPadding(base64.NoPadding)
+	}
+
+	return enc.WithPadding([]rune(padding)[0])
 }
 
 // decodeBase64 converts the inputBytes to a decoded string
