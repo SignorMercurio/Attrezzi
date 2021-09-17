@@ -39,7 +39,8 @@ Example:
 	att fmt -i in.txt bin -d`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			delimiter := getDelimiter()
-			if delimiter == nil {
+			if bytes.Compare(delimiter, []byte("")) == 0 {
+				delimiter = []byte(" ")
 				EmptyDelimiter()
 			}
 

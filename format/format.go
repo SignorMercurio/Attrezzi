@@ -104,7 +104,7 @@ func NoActionSpecified() {
 }
 
 func EmptyDelimiter() {
-	cmd.Log.Error("Empty delimiter is not allowed in this module.")
+	cmd.Log.Warn(`Empty delimiter is not allowed in this module, using default one " "`)
 }
 
 func init() {
