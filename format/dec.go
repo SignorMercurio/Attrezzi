@@ -31,7 +31,7 @@ func NewDecCmd() *cobra.Command {
 		Short: "convert string to / from decimal",
 		Long: `convert string to / from decimal
 Example:
-	echo -n "hello" | att fmt -o out.txt dec -e --delim=" "
+	echo -n "hello" | att fmt -o out.txt dec -e --delim="\n"
 	att fmt -i in.txt dec -d`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			delimiter := getDelimiter()

@@ -32,8 +32,8 @@ var (
 func NewB64Cmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "b64",
-		Short: "base64 encode / decode",
-		Long: `base64 encode / decode
+		Short: "Base64 encode / decode",
+		Long: `Base64 encode / decode
 Example:
 	echo -n "hello" | att fmt -o out.txt b64 -e
 	att fmt -i in.txt b64 -d

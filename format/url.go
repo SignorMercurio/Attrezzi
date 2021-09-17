@@ -30,10 +30,10 @@ var (
 func NewUrlCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "url",
-		Short: "url encode / decode",
-		Long: `url encode / decode
+		Short: "URL encode / decode",
+		Long: `URL encode / decode
 Example:
-	echo -n "hello" | att fmt -o out.txt url -e
+	echo -n "hello" | att fmt -o out.txt url -ea
 	att fmt -i in.txt url -d
 `,
 		RunE: func(cmd *cobra.Command, args []string) error {
