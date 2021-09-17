@@ -51,7 +51,7 @@ Example:
 	}
 	cmd.Flags().BoolVarP(&encode, "encode", "e", false, "Encode to base32")
 	cmd.Flags().BoolVarP(&decode, "decode", "d", false, "Decode from base32")
-	cmd.Flags().StringVarP(&alphabet, "alphabet", "a", "std", `Alphabet for base32, or "hex" for hex encoding (See RFC 4648)`)
+	cmd.Flags().StringVarP(&alphabet, "alphabet", "a", "std", `32-byte Alphabet for base32, or "hex" for hex encoding (See RFC 4648)`)
 	cmd.Flags().StringVarP(&padding, "padding", "p", "=", `Padding for base32, or "" for no padding`)
 
 	return cmd

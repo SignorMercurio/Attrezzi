@@ -59,7 +59,7 @@ Example:
 	}
 	cmd.Flags().BoolVarP(&encode, "encode", "e", false, "Encode to base64")
 	cmd.Flags().BoolVarP(&decode, "decode", "d", false, "Decode from base64")
-	cmd.Flags().StringVarP(&alphabet, "alphabet", "a", "std", `Alphabet for base64, or "url" for URLEncoding (See RFC4648)`)
+	cmd.Flags().StringVarP(&alphabet, "alphabet", "a", "std", `64-byte Alphabet for base64, or "url" for URLEncoding (See RFC4648)`)
 	cmd.Flags().StringVarP(&padding, "padding", "p", "=", `Padding for base64, or "" for no padding`)
 
 	return cmd
