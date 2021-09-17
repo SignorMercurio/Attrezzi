@@ -10,7 +10,7 @@ Attrezzi is a CLI tool integrated with multiple features useful for hacking.
   - [x] `bin` | convert string to / from binary
   - [x] `dec` | convert string to / from decimal
   - [x] `url` | URL encode / decode
-  - [ ] `htm` | HTML Entity encode / decode
+  - [x] `htm` | HTML Entity encode / decode
   - [ ] `uni` | Unicode conversion
   - [ ] `b32` | Base32 encode / decode
   - [ ] `b58` | Base58 encode / decode
