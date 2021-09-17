@@ -62,9 +62,9 @@ Example:
 		},
 	}
 
-	cmd.Flags().BoolVarP(&encode, "encode", "e", false, "URLEncode")
-	cmd.Flags().BoolVarP(&decode, "decode", "d", false, "URLDecode")
-	cmd.Flags().BoolVarP(&all, "all", "a", false, "URLDecode all special characters")
+	cmd.Flags().BoolVarP(&encode, "encode", "e", false, "URL encode")
+	cmd.Flags().BoolVarP(&decode, "decode", "d", false, "URL decode")
+	cmd.Flags().BoolVarP(&all, "all", "a", false, "URL encode all special characters")
 
 	return cmd
 }

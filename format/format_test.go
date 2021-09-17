@@ -22,6 +22,7 @@ func exec(args ...string) {
 		NewBinCmd(),
 		NewDecCmd(),
 		NewUrlCmd(),
+		NewHtmCmd(),
 	)
 	rootCmd.AddCommand(fmtCmd)
 
@@ -109,35 +110,13 @@ func TestURLAll(t *testing.T) {
 	checkResult(src, t)
 }
 
-func TestHTMLNamedAll(t *testing.T) {
+func TestHTML(t *testing.T) {
 	in := "./test/in_html.txt"
 	src := "<script>alert('xss');</script>"
-	dst := `&lt;&#115;&#99;&#114;&#105;&#112;&#116;&gt;&#97;&#108;&#101;&#114;&#116;&lpar;&apos;&#120;&#115;&#115;&apos;&rpar;&semi;&lt;&sol;&#115;&#99;&#114;&#105;&#112;&#116;&gt;`
-	exec(in, "htm", "-ea")
+	dst := `&lt;script&gt;alert(&#39;xss&#39;);&lt;/script&gt;`
+	exec(in, "htm", "-e")
 	checkResult(dst, t)
 
 	exec(out, "htm", "-d")
-	checkResult(src, t)
-}
-
-func TestHTMLDec(t *testing.T) {
-	in := "./test/in_html.txt"
-	src := "<script>alert('xss');</script>"
-	dst := `&#60;script&#62;alert&#40;&#39;xss&#39;&#41;&#59;&#60;&#47;script&#62;`
-	exec(in, "htm", "-e", "-t", "dec")
-	checkResult(dst, t)
-
-	exec(out, "htm", "-d", "-t", "dec")
-	checkResult(src, t)
-}
-
-func TestHTMLHex(t *testing.T) {
-	in := "./test/in_html.txt"
-	src := "<script>alert('xss');</script>"
-	dst := `&#x3c;script&#x3e;alert&#x28;&#x27;xss&#x27;&#x29;&#x3b;&#x3c;&#x2f;script&#x3e;`
-	exec(in, "htm", "-e", "-t", "hex")
-	checkResult(dst, t)
-
-	exec(out, "htm", "-d", "-t", "hex")
 	checkResult(src, t)
 }
