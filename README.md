@@ -34,5 +34,5 @@ Attrezzi is a CLI tool integrated with multiple features useful for hacking.
 - [ ] `net` | network-related operations
   - [ ] ...
 - [ ] `msc` | miscellaneous operations
-  - [ ] `uid` | UUID generation
+  - [x] `uid` | UUID generation
   - [ ] ...
