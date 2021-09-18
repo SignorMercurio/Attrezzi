@@ -55,3 +55,14 @@ func TestRot3(t *testing.T) {
 	exec(out, "rot", "-d", "-n", "3")
 	checkResult(src, t)
 }
+
+func TestMor(t *testing.T) {
+	in := "./test/in_mor.txt"
+	src := "Hello world 123"
+	dst := "····/·/·_··/·_··/___\n·__/___/·_·/·_··/_··\n·____/··___/···__"
+	exec(in, "mor", "-e", "--dash", "_", "--dot", "·", "-l", "/", "-w", "\n")
+	checkResult(dst, t)
+
+	exec(out, "mor", "-d", "--dash", "_", "--dot", "·", "-l", "/", "-w", "\n")
+	checkResult(src, t)
+}

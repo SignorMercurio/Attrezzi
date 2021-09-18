@@ -20,8 +20,8 @@ import (
 )
 
 var (
-	encode    bool
-	decode    bool
+	enc       bool
+	dec       bool
 	rotNumber uint8
 )
 
@@ -36,25 +36,26 @@ Example:
 	att enc -i in.txt rot -n 13 -d
 	echo -n "Attrezzi" | att enc rot -e | att enc rot -d`,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			if encode {
-				encoded := rotEncode(inputBytes)
-				Echo(encoded)
-			} else if decode {
-				decoded := rotDecode(inputBytes)
-				Echo(decoded)
+			if enc {
+				enced := rotEncrypt(inputBytes)
+				Echo(enced)
+			} else if dec {
+				deced := rotDecrypt(inputBytes)
+				Echo(deced)
 			} else {
 				NoActionSpecified()
 			}
 			return nil
 		},
 	}
-	cmd.Flags().BoolVarP(&encode, "encode", "e", false, "Encode to base64")
-	cmd.Flags().BoolVarP(&decode, "decode", "d", false, "Decode from base64")
+	cmd.Flags().BoolVarP(&enc, "encrypt", "e", false, "ROTx Encryption")
+	cmd.Flags().BoolVarP(&dec, "decrypt", "d", false, "ROTx Decryption")
 	cmd.Flags().Uint8VarP(&rotNumber, "number", "n", 13, "Number to shift")
 
 	return cmd
 }
 
+// rot rotates a byte with [shift]
 func rot(b byte, shift uint8) byte {
 	var a, z byte
 	switch {
@@ -69,14 +70,16 @@ func rot(b byte, shift uint8) byte {
 	return a + (b-a+shift)%(z-a+1)
 }
 
-func rotEncode(src []byte) string {
+// rotEncrypt encrypts a []byte to a rotated string
+func rotEncrypt(src []byte) string {
 	for i, v := range src {
 		src[i] = rot(v, rotNumber)
 	}
 	return string(src)
 }
 
-func rotDecode(src []byte) string {
+// rotDecrypt decrypts a rotated []byte to a string
+func rotDecrypt(src []byte) string {
 	for i, v := range src {
 		src[i] = rot(v, 26-rotNumber)
 	}

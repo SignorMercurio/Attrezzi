@@ -19,7 +19,7 @@ Attrezzi is a CLI tool integrated with multiple features useful for hacking.
   - [x] `uni` | Unicode conversion
 - [ ] `enc` | cryptographic operations
   - [x] `rot` | ROT13-like encryption / decryption
-  - [ ] `mor` | Morse code transformation
+  - [x] `mor` | Morse code transformation
   - [ ] `xor` | XOR operation
   - [ ] `aes` | AES encryption / decryption
   - [ ] `rsa` | RSA encryption / decryption
