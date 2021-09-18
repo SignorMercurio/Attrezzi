@@ -22,10 +22,10 @@ import (
 )
 
 var (
-	dash         string
-	dot          string
-	letter_delim string
-	word_delim   string
+	dash        string
+	dot         string
+	letterDelim string
+	wordDelim   string
 )
 
 // NewMorCmd represents the mor command
@@ -38,8 +38,8 @@ Example:
 	echo -n "hello" | att enc -o out.txt mor -e
 	att enc -i in.txt mor -d --dash "DASH" --dot "DOT" -l "/" -w "\n"`,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			letter := getDelimiter(letter_delim)
-			word := getDelimiter(word_delim)
+			letter := getDelimiter(letterDelim)
+			word := getDelimiter(wordDelim)
 
 			if enc {
 				enced := morEncode(string(inputBytes), string(letter), string(word))
@@ -57,8 +57,8 @@ Example:
 	cmd.Flags().BoolVarP(&dec, "decode", "d", false, "Decode from morse code")
 	cmd.Flags().StringVar(&dash, "dash", "-", "Dash")
 	cmd.Flags().StringVar(&dot, "dot", ".", "Dot")
-	cmd.Flags().StringVarP(&letter_delim, "letter-delim", "l", " ", "Letter delimiter")
-	cmd.Flags().StringVarP(&word_delim, "word-delim", "w", "\n", "Word delimiter")
+	cmd.Flags().StringVarP(&letterDelim, "letter-delim", "l", " ", "Letter delimiter")
+	cmd.Flags().StringVarP(&wordDelim, "word-delim", "w", "\n", "Word delimiter")
 
 	return cmd
 }

@@ -45,15 +45,15 @@ Example:
 				Echo(encoded)
 			} else if decode {
 				arr := getDecodeArr(delimiter)
-				err := dec2hex(arr)
+				err := Dec2hex(arr)
 				if err != nil {
 					return err
 				}
-				decoded, err := decodeHex(arr)
+				decoded, err := DecodeHex(arr)
 				if err != nil {
 					return err
 				}
-				Echo(decoded)
+				Echo(string(decoded))
 			} else {
 				NoActionSpecified()
 			}
@@ -84,8 +84,8 @@ func encodeToDec(src []byte, delimiter []byte) string {
 	return buf.String()
 }
 
-// dec2hex converts a slice of decimal string to a slice of hex string
-func dec2hex(arr []string) error {
+// Dec2hex converts a slice of decimal string to a slice of hex string
+func Dec2hex(arr []string) error {
 	for i, v := range arr {
 		s, err := strconv.ParseInt(v, 10, 64)
 		if err != nil {

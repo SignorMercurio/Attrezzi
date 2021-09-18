@@ -103,6 +103,10 @@ func NoActionSpecified() {
 	cmd.Log.Error("No action specified. Please specify -e or -d.")
 }
 
+func NoKeySpecified() {
+	cmd.Log.Error("No key specified. Please specify one.")
+}
+
 func init() {
 	cmd.RootCmd.AddCommand(encCmd)
 }

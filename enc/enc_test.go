@@ -19,6 +19,7 @@ func exec(args ...string) {
 	encCmd.AddCommand(
 		NewRotCmd(),
 		NewMorCmd(),
+		NewXorCmd(),
 	)
 	rootCmd.AddCommand(encCmd)
 
@@ -66,4 +67,29 @@ func TestMor(t *testing.T) {
 
 	exec(out, "mor", "-d", "--dash", "_", "--dot", "·", "-l", "/", "-w", "\n")
 	checkResult(src, t)
+}
+
+func TestXorHex(t *testing.T) {
+	in := "./test/in_xor.txt"
+	dst := "成了"
+
+	exec(in, "xor", "-k", "deadbeefcafe")
+	checkResult(dst, t)
+
+	exec(in, "xor", "-k", "110111101010110110111110111011111100101011111110", "--key-fmt", "bin")
+	checkResult(dst, t)
+
+	exec(in, "xor", "-k", "244837814094590", "--key-fmt", "dec")
+	checkResult(dst, t)
+
+	exec(in, "xor", "-k", "3q2+78r+", "--key-fmt", "b64")
+	checkResult(dst, t)
+}
+
+func TestXorUTF8(t *testing.T) {
+	in := "./test/in_xor_utf8.txt"
+	dst := "@@@@@@@"
+
+	exec(in, "xor", "-k", `!"#$%&'`, "--key-fmt", "utf8", "--input-fmt", "utf8")
+	checkResult(dst, t)
 }

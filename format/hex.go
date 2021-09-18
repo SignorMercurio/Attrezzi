@@ -45,11 +45,11 @@ Example:
 				Echo(insertInto(encoded, 2, delimiter))
 			} else if decode {
 				arr := getDecodeArr(delimiter)
-				decoded, err := decodeHex(arr)
+				decoded, err := DecodeHex(arr)
 				if err != nil {
 					return err
 				}
-				Echo(decoded)
+				Echo(string(decoded))
 			} else {
 				NoActionSpecified()
 			}
@@ -93,14 +93,14 @@ func getDecodeArr(delimiter []byte) []string {
 	return arr
 }
 
-// decodeHex converts a slice of hex string to a decoded string
-func decodeHex(arr []string) (string, error) {
+// DecodeHex converts a slice of hex string to a decoded []byte
+func DecodeHex(arr []string) ([]byte, error) {
 	decoded, err := hex.DecodeString(strings.Join(arr, ""))
 	if err != nil {
-		return "", errors.Wrap(err, "decode hex")
+		return nil, errors.Wrap(err, "decode hex")
 	}
 
-	return string(decoded), nil
+	return decoded, nil
 }
 
 // insertInto inserts the delimiter into the string every [interval] characters

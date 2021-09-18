@@ -49,15 +49,15 @@ Example:
 				Echo(insertInto(encoded, byteLen, delimiter))
 			} else if decode {
 				arr := getDecodeArr(delimiter)
-				err := bin2hex(arr)
+				err := Bin2hex(arr)
 				if err != nil {
 					return err
 				}
-				decoded, err := decodeHex(arr)
+				decoded, err := DecodeHex(arr)
 				if err != nil {
 					return err
 				}
-				Echo(decoded)
+				Echo(string(decoded))
 			} else {
 				NoActionSpecified()
 			}
@@ -83,8 +83,8 @@ func encodeToBin(src []byte) string {
 	return buf.String()
 }
 
-// bin2hex converts a slice of binary string to a slice of hex string
-func bin2hex(arr []string) error {
+// Bin2hex converts a slice of binary string to a slice of hex string
+func Bin2hex(arr []string) error {
 	for i, v := range arr {
 		s, err := strconv.ParseInt(v, 2, 64)
 		if err != nil {
