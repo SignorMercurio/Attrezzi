@@ -45,7 +45,7 @@ Example:
 			}
 
 			if encode {
-				encoded := encodeToBin(inputBytes)
+				encoded := EncodeToBin(inputBytes)
 				Echo(insertInto(encoded, byteLen, delimiter))
 			} else if decode {
 				arr := getDecodeArr(delimiter)
@@ -72,8 +72,8 @@ Example:
 	return cmd
 }
 
-// encodeToBin converts a []byte to a binary string
-func encodeToBin(src []byte) string {
+// EncodeToBin converts a []byte to a binary string
+func EncodeToBin(src []byte) string {
 	buf := bytes.NewBuffer([]byte{})
 
 	for _, v := range src {

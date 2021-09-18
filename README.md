@@ -2,6 +2,8 @@
 
 Attrezzi is a CLI tool integrated with multiple features useful for hacking.
 
+> Note: Only frequently-used modules are included.
+
 ## Modules
 
 - [x] `fmt` | data format operations
@@ -21,13 +23,13 @@ Attrezzi is a CLI tool integrated with multiple features useful for hacking.
   - [x] `rot` | ROT13-like encryption / decryption
   - [x] `mor` | Morse code transformation
   - [x] `xor` | XOR operation
+  - [x] `rnd` | Random number generation
   - [ ] `aes` | AES encryption / decryption
   - [ ] `rsa` | RSA encryption / decryption
-  - [ ] `rkg` | RSA Key Generation
-  - [ ] `rnd` | PRNG
-  - [ ] `md5` | MD5 Hash Function
-  - [ ] `sh1` | SHA1 Hash Function
-  - [ ] `sh2` | SHA256 Hash Function
+  - [ ] `rkg` | RSA key generation
+  - [ ] `md5` | MD5 hash function
+  - [ ] `sh1` | SHA1 hash function
+  - [ ] `sh2` | SHA256 hash function
   - [ ] `jwt` | JWT-related operation
 - [ ] `net` | network-related operations
   - [ ] ...

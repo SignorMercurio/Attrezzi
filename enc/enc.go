@@ -41,10 +41,13 @@ func NewEncCmd() *cobra.Command {
 		Short: "enc helps to deal with cryptographic operations",
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 			var err error
-			inputBytes, err = getInput()
-			if err != nil {
-				return err
+			if cmd.Use != "rnd" {
+				inputBytes, err = getInput()
+				if err != nil {
+					return err
+				}
 			}
+
 			if getOutput() != nil {
 				return err
 			}

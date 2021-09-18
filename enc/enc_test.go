@@ -1,6 +1,7 @@
 package enc
 
 import (
+	"bytes"
 	"io/ioutil"
 	"testing"
 
@@ -20,6 +21,7 @@ func exec(args ...string) {
 		NewRotCmd(),
 		NewMorCmd(),
 		NewXorCmd(),
+		NewRndCmd(),
 	)
 	rootCmd.AddCommand(encCmd)
 
@@ -28,15 +30,28 @@ func exec(args ...string) {
 	rootCmd.Execute()
 }
 
-func checkResult(expected string, t *testing.T) {
+func readOutput(t *testing.T) []byte {
 	res, err := ioutil.ReadFile(out)
 	if err != nil {
 		t.Fatal(err)
 	}
+	return res
+}
 
-	result := string(res)
+func checkResult(expected string, t *testing.T) {
+	result := string(readOutput(t))
 	if result != expected {
 		t.Errorf(`expected "%s", got "%s"`, expected, result)
+	}
+}
+
+func checkNotEmptyAndHasLen(expectedLen uint, t *testing.T) {
+	empty := make([]byte, expectedLen)
+	b := readOutput(t)
+	lenB := len(b)
+
+	if bytes.Equal(empty, b) || lenB != int(expectedLen) {
+		t.Errorf("b is empty OR of invalid length; expected length is %d, got %d", expectedLen, lenB)
 	}
 }
 
@@ -92,4 +107,18 @@ func TestXorUTF8(t *testing.T) {
 
 	exec(in, "xor", "-k", `!"#$%&'`, "--key-fmt", "utf8", "--input-fmt", "utf8")
 	checkResult(dst, t)
+}
+
+func TestRndHex(t *testing.T) {
+	in := "/dev/null" // not really needed
+
+	exec(in, "rnd", "-l", "16")
+	checkNotEmptyAndHasLen(32, t)
+}
+
+func TestRndBin(t *testing.T) {
+	in := "/dev/null"
+
+	exec(in, "rnd", "-l", "8", "-f", "bin")
+	checkNotEmptyAndHasLen(64, t)
 }
