@@ -18,6 +18,7 @@ func exec(args ...string) {
 	encCmd := NewEncCmd()
 	encCmd.AddCommand(
 		NewRotCmd(),
+		NewMorCmd(),
 	)
 	rootCmd.AddCommand(encCmd)
 
@@ -58,7 +59,7 @@ func TestRot3(t *testing.T) {
 
 func TestMor(t *testing.T) {
 	in := "./test/in_mor.txt"
-	src := "Hello world 123"
+	src := "HELLO WORLD 123"
 	dst := "····/·/·_··/·_··/___\n·__/___/·_·/·_··/_··\n·____/··___/···__"
 	exec(in, "mor", "-e", "--dash", "_", "--dot", "·", "-l", "/", "-w", "\n")
 	checkResult(dst, t)

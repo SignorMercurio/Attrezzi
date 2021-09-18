@@ -100,7 +100,7 @@ func Echo(content interface{}) {
 }
 
 func NoActionSpecified() {
-	cmd.Log.Error("No action specified. Please specify -e or -d")
+	cmd.Log.Error("No action specified. Please specify -e or -d.")
 }
 
 func init() {

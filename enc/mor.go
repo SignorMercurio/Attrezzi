@@ -144,12 +144,14 @@ func morDecode(src string, letter string, word string) string {
 	res := []rune{}
 	src = strings.ReplaceAll(strings.ReplaceAll(src, dash, "-"), dot, ".")
 	words := strings.Split(src, word)
-	for _, wd := range words {
+	for i, wd := range words {
 		letters := strings.Split(wd, letter)
 		for _, lt := range letters {
 			res = append(res, mor2alpha[lt])
 		}
-		res = append(res, ' ')
+		if i != len(words)-1 {
+			res = append(res, ' ')
+		}
 	}
 
 	return string(res)
