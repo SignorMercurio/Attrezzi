@@ -13,15 +13,32 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-package main
+package msc
 
 import (
-	"github.com/SignorMercurio/attrezzi/cmd"
-	_ "github.com/SignorMercurio/attrezzi/enc"
-	_ "github.com/SignorMercurio/attrezzi/format"
-	_ "github.com/SignorMercurio/attrezzi/msc"
+	uuid "github.com/satori/go.uuid"
+	"github.com/spf13/cobra"
 )
 
-func main() {
-	cmd.Execute()
+// NewUidCmd represents the uid command
+func NewUidCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "uid",
+		Short: "UUID generation",
+		Long: `UUID generation
+Example:
+	att msc uid
+	att msc -o out.txt uid`,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			Echo(uuid.NewV4().String())
+
+			return nil
+		},
+	}
+
+	return cmd
+}
+
+func init() {
+	mscCmd.AddCommand(NewUidCmd())
 }
