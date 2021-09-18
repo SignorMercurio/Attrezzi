@@ -13,7 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-package format
+package enc
 
 import (
 	"fmt"
@@ -31,14 +31,14 @@ var (
 	inputBytes []byte
 	outputFile string
 	output     io.Writer = os.Stdout
-	fmtCmd               = NewFmtCmd()
+	encCmd               = NewEncCmd()
 )
 
-// NewFmtCmd represents the fmt command
-func NewFmtCmd() *cobra.Command {
+// NewEncCmd represents the enc command
+func NewEncCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "fmt",
-		Short: "fmt helps to deal with data format operations",
+		Use:   "enc",
+		Short: "enc helps to deal with cryptographic operations",
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 			var err error
 			inputBytes, err = getInput()
@@ -103,10 +103,6 @@ func NoActionSpecified() {
 	cmd.Log.Error("No action specified. Please specify -e or -d")
 }
 
-func EmptyDelimiter() {
-	cmd.Log.Warn(`Empty delimiter is not allowed in this module, using default one " "`)
-}
-
 func init() {
-	cmd.RootCmd.AddCommand(fmtCmd)
+	cmd.RootCmd.AddCommand(encCmd)
 }

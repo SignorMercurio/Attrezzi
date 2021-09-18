@@ -17,6 +17,7 @@ package main
 
 import (
 	"github.com/SignorMercurio/attrezzi/cmd"
+	_ "github.com/SignorMercurio/attrezzi/enc"
 	_ "github.com/SignorMercurio/attrezzi/format"
 )
 
