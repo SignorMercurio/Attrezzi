@@ -10,7 +10,7 @@ import (
 var (
 	in  = "./test/in.txt"
 	out = "./test/out.txt"
-	src = "hello world"
+	src = "Hello 世界 123"
 )
 
 func exec(args ...string) {
@@ -49,7 +49,7 @@ func checkResult(expected string, t *testing.T) {
 }
 
 func TestB64(t *testing.T) {
-	dst := "aGVsbG8gd29ybGQ="
+	dst := "SGVsbG8g5LiW55WMIDEyMw=="
 	exec(in, "b64", "-e")
 	checkResult(dst, t)
 
@@ -58,7 +58,7 @@ func TestB64(t *testing.T) {
 }
 
 func TestB64NoPadding(t *testing.T) {
-	dst := "aGVsbG8gd29ybGQ"
+	dst := "SGVsbG8g5LiW55WMIDEyMw"
 	exec(in, "b64", "-e", "-p", "")
 	checkResult(dst, t)
 
@@ -67,7 +67,7 @@ func TestB64NoPadding(t *testing.T) {
 }
 
 func TestB64StrangePadding(t *testing.T) {
-	dst := "aGVsbG8gd29ybGQ?"
+	dst := "SGVsbG8g5LiW55WMIDEyMw??"
 	exec(in, "b64", "-e", "-p", "?")
 	checkResult(dst, t)
 
@@ -76,7 +76,7 @@ func TestB64StrangePadding(t *testing.T) {
 }
 
 func TestB32(t *testing.T) {
-	dst := "NBSWY3DPEB3W64TMMQ======"
+	dst := "JBSWY3DPEDSLRFXHSWGCAMJSGM======"
 	exec(in, "b32", "-e")
 	checkResult(dst, t)
 
@@ -85,7 +85,7 @@ func TestB32(t *testing.T) {
 }
 
 func TestB32Alphabet(t *testing.T) {
-	dst := "nbswy3dpeb3w64tmmq======"
+	dst := "jbswy3dpedslrfxhswgcamjsgm======"
 	exec(in, "b32", "-e", "-a", "abcdefghijklmnopqrstuvwxyz234567")
 	checkResult(dst, t)
 
@@ -94,7 +94,7 @@ func TestB32Alphabet(t *testing.T) {
 }
 
 func TestB58(t *testing.T) {
-	dst := "StV1DL6CwTryKyV"
+	dst := "9wWTEnNTcvgeNTGbfmax8z"
 	exec(in, "b58", "-e")
 	checkResult(dst, t)
 
@@ -103,7 +103,7 @@ func TestB58(t *testing.T) {
 }
 
 func TestB58Flickr(t *testing.T) {
-	dst := "rTu1dk6cWsRYjYu"
+	dst := "9WvseMnsBVFDnsgAELzX8Z"
 	exec(in, "b58", "-e", "-a", "flickr")
 	checkResult(dst, t)
 
@@ -112,7 +112,7 @@ func TestB58Flickr(t *testing.T) {
 }
 
 func TestB85(t *testing.T) {
-	dst := "BOu!rD]j7BEbo7"
+	dst := "87cURD]n,NQKONl+>GW-"
 	exec(in, "b85", "-e")
 	checkResult(dst, t)
 
@@ -121,7 +121,7 @@ func TestB85(t *testing.T) {
 }
 
 func TestBsx62(t *testing.T) {
-	dst := "AAwf93rvy4aWQVw"
+	dst := "2CbnUNVhpxZqW7mkcOp2Ml"
 	exec(in, "bsx", "-e")
 	checkResult(dst, t)
 
@@ -130,7 +130,7 @@ func TestBsx62(t *testing.T) {
 }
 
 func TestBsx16(t *testing.T) {
-	dst := "68656C6C6F20776F726C64"
+	dst := "48656C6C6F20E4B896E7958C20313233"
 	exec(in, "bsx", "-b", "16", "-e")
 	checkResult(dst, t)
 
@@ -139,7 +139,7 @@ func TestBsx16(t *testing.T) {
 }
 
 func TestBsx16WithAlphabetOnly(t *testing.T) {
-	dst := "68656c6c6f20776f726c64"
+	dst := "48656c6c6f20e4b896e7958c20313233"
 	exec(in, "bsx", "-e", "-a", "0123456789abcdef")
 	checkResult(dst, t)
 
@@ -148,7 +148,7 @@ func TestBsx16WithAlphabetOnly(t *testing.T) {
 }
 
 func TestHex(t *testing.T) {
-	dst := "68656c6c6f20776f726c64"
+	dst := "48656c6c6f20e4b896e7958c20313233"
 	exec(in, "hex", "-e")
 	checkResult(dst, t)
 
@@ -157,7 +157,7 @@ func TestHex(t *testing.T) {
 }
 
 func TestHexWith0x(t *testing.T) {
-	dst := "0x680x650x6c0x6c0x6f0x200x770x6f0x720x6c0x64"
+	dst := "0x480x650x6c0x6c0x6f0x200xe40xb80x960xe70x950x8c0x200x310x320x33"
 	exec(in, "hex", "-e", "--delim", "0x", "-p")
 	checkResult(dst, t)
 
@@ -166,7 +166,7 @@ func TestHexWith0x(t *testing.T) {
 }
 
 func TestBinWithSpace(t *testing.T) {
-	dst := "01101000 01100101 01101100 01101100 01101111 00100000 01110111 01101111 01110010 01101100 01100100"
+	dst := "01001000 01100101 01101100 01101100 01101111 00100000 11100100 10111000 10010110 11100111 10010101 10001100 00100000 00110001 00110010 00110011"
 	exec(in, "bin", "-e", "--delim", " ")
 	checkResult(dst, t)
 
@@ -175,7 +175,7 @@ func TestBinWithSpace(t *testing.T) {
 }
 
 func TestDecWithLF(t *testing.T) {
-	dst := "104\n101\n108\n108\n111\n32\n119\n111\n114\n108\n100\n"
+	dst := "72\n101\n108\n108\n111\n32\n228\n184\n150\n231\n149\n140\n32\n49\n50\n51\n"
 	exec(in, "dec", "-e", "--delim", "\\n")
 	checkResult(dst, t)
 
@@ -217,9 +217,7 @@ func TestHTML(t *testing.T) {
 }
 
 func TestUni(t *testing.T) {
-	in := "./test/in_uni.txt"
-	src := "hello 世界"
-	dst := `hello \u4e16\u754c`
+	dst := `Hello \u4e16\u754c 123`
 	exec(in, "uni", "-e")
 	checkResult(dst, t)
 
