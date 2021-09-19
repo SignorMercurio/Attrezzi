@@ -19,7 +19,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 )
 
@@ -39,10 +38,7 @@ Example:
 				encoded := quoted[1 : len(quoted)-1] // strip ""
 				Echo(encoded)
 			} else if decode {
-				decoded, err := fromUnicode(string(inputBytes))
-				if err != nil {
-					return err
-				}
+				decoded := fromUnicode(string(inputBytes))
 				Echo(decoded)
 			} else {
 				NoActionSpecified()
@@ -57,17 +53,14 @@ Example:
 	return cmd
 }
 
-func fromUnicode(from string) (string, error) {
-	str, err := strconv.Unquote(strings.Replace(
+func fromUnicode(from string) string {
+	str, _ := strconv.Unquote(strings.Replace(
 		strconv.Quote(from),
 		`\\u`,
 		`\u`,
 		-1,
-	))
-	if err != nil {
-		return "", errors.Wrap(err, "decode unicode")
-	}
-	return str, nil
+	)) // no error as long as calling strconv.Quote beforehand
+	return str
 }
 
 func init() {

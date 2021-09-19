@@ -86,10 +86,10 @@ func getDecodeArr(delimiter []byte) []string {
 	if arr[0] == "" {
 		arr = arr[1:]
 	}
-	last := len(arr) - 1
-	if arr[last] == "" {
-		arr = arr[:last]
-	}
+	// last := len(arr) - 1
+	// if arr[last] == "" {
+	// 	arr = arr[:last]
+	// }
 	return arr
 }
 

@@ -34,10 +34,11 @@ var (
 // NewRootCmd represents the base command when called without any subcommands
 func NewRootCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:          "att",
-		Short:        "A handy toolkit",
-		Long:         `Attrezzi is a CLI tool integrated with multiple features useful for hacking.`,
-		SilenceUsage: true,
+		Use:           "att",
+		Short:         "A handy toolkit",
+		Long:          `Attrezzi is a CLI tool integrated with multiple features useful for hacking.`,
+		SilenceUsage:  true,
+		SilenceErrors: true,
 		// Uncomment the following line if your bare application
 		// has an action associated with it:
 		// Run: func(cmd *cobra.Command, args []string) { },

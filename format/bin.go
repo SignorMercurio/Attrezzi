@@ -53,10 +53,7 @@ Example:
 				if err != nil {
 					return err
 				}
-				decoded, err := DecodeHex(arr)
-				if err != nil {
-					return err
-				}
+				decoded, _ := DecodeHex(arr) // no error as long as Bin2hex doesn't error
 				Echo(string(decoded))
 			} else {
 				NoActionSpecified()

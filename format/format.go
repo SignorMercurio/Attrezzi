@@ -41,11 +41,10 @@ func NewFmtCmd() *cobra.Command {
 		Short: "fmt helps to deal with data format operations",
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 			var err error
-			inputBytes, err = getInput()
-			if err != nil {
+			if inputBytes, err = getInput(); err != nil {
 				return err
 			}
-			if getOutput() != nil {
+			if err = getOutput(); err != nil {
 				return err
 			}
 

@@ -49,10 +49,7 @@ Example:
 				if err != nil {
 					return err
 				}
-				decoded, err := DecodeHex(arr)
-				if err != nil {
-					return err
-				}
+				decoded, _ := DecodeHex(arr) // no error as long as Dec2hex doesn't error
 				Echo(string(decoded))
 			} else {
 				NoActionSpecified()
@@ -76,9 +73,11 @@ func encodeToDec(src []byte, delimiter []byte) string {
 		buf.Write(delimiter)
 	}
 
-	for _, v := range src {
+	for i, v := range src {
 		buf.WriteString(fmt.Sprintf("%d", v))
-		buf.Write(delimiter)
+		if i != len(src)-1 {
+			buf.Write(delimiter)
+		}
 	}
 
 	return buf.String()
