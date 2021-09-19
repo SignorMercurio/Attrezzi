@@ -1,16 +1,18 @@
 package enc
 
 import (
-	"bytes"
-	"io/ioutil"
+	"io"
+	"strconv"
+	"strings"
 	"testing"
 
 	"github.com/SignorMercurio/attrezzi/cmd"
+	"github.com/SignorMercurio/attrezzi/test"
 )
 
 var (
-	in  = "./test/in.txt"
-	out = "./test/out.txt"
+	in  = "./testdata/in.txt"
+	out = "./testdata/out.txt"
 	src = "Hello 世界 123"
 )
 
@@ -31,130 +33,212 @@ func exec(args ...string) {
 	rootCmd.Execute()
 }
 
-func readOutput(t *testing.T) []byte {
-	res, err := ioutil.ReadFile(out)
-	if err != nil {
-		t.Fatal(err)
+func TestEnc(t *testing.T) {
+	rootCmd := cmd.NewRootCmd()
+	encCmd := NewEncCmd()
+	encCmd.AddCommand(NewRotCmd())
+	rootCmd.AddCommand(encCmd)
+
+	cmd.Log.SetOutput(io.Discard)
+	tests := []test.Test{
+		// open output fail
+		{Cmd: []string{"enc", "-o", "bla/blabla.txt", "-i", in, "rot", "-e"}, Dst: ""},
+		// open input fail
+		{Cmd: []string{"enc", "-i", "bla/blabla.txt", "-o", out, "rot", "-e"}, Dst: ""},
 	}
-	return res
-}
 
-func checkResult(expected string, t *testing.T) {
-	result := string(readOutput(t))
-	if result != expected {
-		t.Errorf(`expected "%s", got "%s"`, expected, result)
-	}
-}
-
-func checkNotEmptyAndHasLen(expectedLen uint, t *testing.T) {
-	empty := make([]byte, expectedLen)
-	b := readOutput(t)
-	lenB := len(b)
-
-	if bytes.Equal(empty, b) || lenB != int(expectedLen) {
-		t.Errorf("b is empty OR of invalid length; expected length is %d, got %d", expectedLen, lenB)
+	for _, tst := range tests {
+		rootCmd.SetArgs(tst.Cmd)
+		rootCmd.Execute()
+		test.CheckResult(out, tst.Dst, t)
 	}
 }
 
 func TestRot(t *testing.T) {
-	dst := "Uryyb 世界 123"
-	exec(in, "rot", "-e")
-	checkResult(dst, t)
+	tests := []test.Test{
+		// default
+		{Cmd: []string{in, "rot", "-e"}, Dst: "Uryyb 世界 123"},
+		{Cmd: []string{out, "rot", "-d"}, Dst: src},
+		// caesar
+		{Cmd: []string{in, "rot", "-e", "-n", "3"}, Dst: "Khoor 世界 123"},
+		{Cmd: []string{out, "rot", "-d", "-n", "3"}, Dst: src},
+		// no action
+		{Cmd: []string{in, "rot"}, Dst: ""},
+	}
 
-	exec(out, "rot", "-d")
-	checkResult(src, t)
-}
-
-func TestRot3(t *testing.T) {
-	dst := "Khoor 世界 123"
-	exec(in, "rot", "-e", "-n", "3")
-	checkResult(dst, t)
-
-	exec(out, "rot", "-d", "-n", "3")
-	checkResult(src, t)
+	for _, tst := range tests {
+		exec(tst.Cmd...)
+		test.CheckResult(out, tst.Dst, t)
+	}
 }
 
 func TestMor(t *testing.T) {
-	in := "./test/in_mor.txt"
+	in := "./testdata/in_mor.txt"
 	src := "HELLO WORLD 123"
-	dst := "····/·/·_··/·_··/___\n·__/___/·_·/·_··/_··\n·____/··___/···__"
-	exec(in, "mor", "-e", "--dash", "_", "--dot", "·", "-l", "/", "-w", "\n")
-	checkResult(dst, t)
 
-	exec(out, "mor", "-d", "--dash", "_", "--dot", "·", "-l", "/", "-w", "\n")
-	checkResult(src, t)
+	tests := []test.Test{
+		// custom
+		{Cmd: []string{in, "mor", "-e", "--dash", "_", "--dot", "·", "-l", "/", "-w", `\n`}, Dst: "····/·/·_··/·_··/___\n·__/___/·_·/·_··/_··\n·____/··___/···__"},
+		{Cmd: []string{out, "mor", "-d", "--dash", "_", "--dot", "·", "-l", "/", "-w", `\n`}, Dst: src},
+		// with \r\n
+		{Cmd: []string{in, "mor", "-e", "-l", "/", "-w", `\r\n`}, Dst: "...././.-../.-../---\r\n.--/---/.-./.-../-..\r\n.----/..---/...--"},
+		{Cmd: []string{out, "mor", "-d", "-l", "/", "-w", `\r\n`}, Dst: src},
+		// no action
+		{Cmd: []string{in, "mor"}, Dst: ""},
+	}
+
+	for _, tst := range tests {
+		exec(tst.Cmd...)
+		test.CheckResult(out, tst.Dst, t)
+	}
 }
 
-func TestXorHex(t *testing.T) {
-	in := "./test/in_xor.txt"
+func TestXor(t *testing.T) {
+	in := "./testdata/in_xor.txt"
 	dst := "成了"
 
-	exec(in, "xor", "-k", "deadbeefcafe")
-	checkResult(dst, t)
+	tests := []test.Test{
+		// hex ^ hex
+		{Cmd: []string{in, "xor", "-k", "deadbeefcafe"}, Dst: dst},
+		// hex ^ bin
+		{Cmd: []string{in, "xor", "-k", "110111101010110110111110111011111100101011111110", "--key-fmt", "bin"}, Dst: dst},
+		// invalid bin
+		{Cmd: []string{in, "xor", "-k", "f110111101010110110111110111011111100101011111110", "--key-fmt", "bin"}, Dst: ""},
+		// hex ^ dec
+		{Cmd: []string{in, "xor", "-k", "244837814094590", "--key-fmt", "dec"}, Dst: dst},
+		// invalid dec
+		{Cmd: []string{in, "xor", "-k", "f244837814094590", "--key-fmt", "dec"}, Dst: ""},
+		// hex ^ b64
+		{Cmd: []string{in, "xor", "-k", "3q2+78r+", "--key-fmt", "b64"}, Dst: dst},
+		// invalid base 64
+		{Cmd: []string{in, "xor", "-k", "3q2+78r+===", "--key-fmt", "b64"}, Dst: ""},
+		// invalid input
+		{Cmd: []string{"./testdata/in_xor_utf8.txt", "xor", "-k", "3q2+78r+", "--key-fmt", "b64", "--input-fmt", "hex"}, Dst: ""},
+		// utf8 ^ utf8
+		{Cmd: []string{"./testdata/in_xor_utf8.txt", "xor", "-k", `!"#$%&'`, "--key-fmt", "utf8", "--input-fmt", "utf8"}, Dst: "@@@@@@@"},
+		// no key
+		{Cmd: []string{in, "xor"}, Dst: ""},
+	}
 
-	exec(in, "xor", "-k", "110111101010110110111110111011111100101011111110", "--key-fmt", "bin")
-	checkResult(dst, t)
-
-	exec(in, "xor", "-k", "244837814094590", "--key-fmt", "dec")
-	checkResult(dst, t)
-
-	exec(in, "xor", "-k", "3q2+78r+", "--key-fmt", "b64")
-	checkResult(dst, t)
+	for _, tst := range tests {
+		exec(tst.Cmd...)
+		test.CheckResult(out, tst.Dst, t)
+	}
 }
 
-func TestXorUTF8(t *testing.T) {
-	in := "./test/in_xor_utf8.txt"
-	dst := "@@@@@@@"
-
-	exec(in, "xor", "-k", `!"#$%&'`, "--key-fmt", "utf8", "--input-fmt", "utf8")
-	checkResult(dst, t)
-}
-
-func TestRndHex(t *testing.T) {
+func TestRnd(t *testing.T) {
 	in := "/dev/null" // not really needed
 
-	exec(in, "rnd", "-l", "16")
-	checkNotEmptyAndHasLen(32, t)
+	tests := []test.Test{
+		// hex
+		{Cmd: []string{in, "rnd", "-l", "16"}, Dst: "32,32"},
+		// bin
+		{Cmd: []string{in, "rnd", "-l", "8", "-f", "bin"}, Dst: "64,64"},
+		// dec
+		{Cmd: []string{in, "rnd", "-l", "1", "-f", "dec"}, Dst: "1,3"},
+	}
+
+	for _, tst := range tests {
+		exec(tst.Cmd...)
+		dst := strings.Split(tst.Dst, ",")
+		minLenExpected, _ := strconv.ParseUint(dst[0], 10, 64)
+		maxLenExpected, _ := strconv.ParseUint(dst[1], 10, 64)
+		test.CheckNotEmptyAndHasLen(out, uint(minLenExpected), uint(maxLenExpected), t)
+	}
 }
 
-func TestRndBin(t *testing.T) {
-	in := "/dev/null"
+func TestAES(t *testing.T) {
+	in_fail := "./testdata/in_xor_utf8.txt"
 
-	exec(in, "rnd", "-l", "8", "-f", "bin")
-	checkNotEmptyAndHasLen(64, t)
+	key16 := "f5f73713bc57d1cec7deb623b292bbc6"
+	key24 := "dd4ebf0e6ced5fb8a356d1acf843d672656d2261590195d2"
+	key32 := "0d94f846deac35f48e8055413c556263e647f36feb939f0c49562dcb6a718d9c"
+
+	tests := []test.Test{
+		// aes-128-cbc
+		{Cmd: []string{in, "aes", "-e", "-m", "cbc", "-k", key16}, Dst: "*"},
+		{Cmd: []string{out, "aes", "-d", "-m", "cbc", "-k", key16}, Dst: src},
+		// aes-128-cbc invalid key
+		{Cmd: []string{in, "aes", "-e", "-m", "cbc", "-k", "123"}, Dst: ""},
+		{Cmd: []string{in, "aes", "-e", "-m", "cbc", "-k", "1234"}, Dst: ""},
+		{Cmd: []string{in, "aes", "-d", "-m", "cbc", "-k", "1234"}, Dst: ""},
+		// aes-128-cbc invalid ciphertext
+		{Cmd: []string{in_fail, "aes", "-d", "-m", "cbc", "-k", key16}, Dst: ""},
+		// aes-192-cfb
+		{Cmd: []string{in, "aes", "-e", "-m", "cfb", "-k", key24}, Dst: "*"},
+		{Cmd: []string{out, "aes", "-d", "-m", "cfb", "-k", key24}, Dst: src},
+		// aes-192-cfb invalid key
+		{Cmd: []string{in, "aes", "-e", "-m", "cfb", "-k", "1234"}, Dst: ""},
+		{Cmd: []string{in, "aes", "-d", "-m", "cfb", "-k", "1234"}, Dst: ""},
+		// aes-192-cfb invalid ciphertext
+		{Cmd: []string{in_fail, "aes", "-d", "-m", "cfb", "-k", key24}, Dst: ""},
+		// aes-128-ofb
+		{Cmd: []string{in, "aes", "-e", "-m", "ofb", "-k", key16}, Dst: "*"},
+		{Cmd: []string{out, "aes", "-d", "-m", "ofb", "-k", key16}, Dst: src},
+		// aes-128-ofb invalid key
+		{Cmd: []string{in, "aes", "-e", "-m", "ofb", "-k", "1234"}, Dst: ""},
+		{Cmd: []string{in, "aes", "-d", "-m", "ofb", "-k", "1234"}, Dst: ""},
+		// aes-128-ofb invalid ciphertext
+		{Cmd: []string{in_fail, "aes", "-d", "-m", "ofb", "-k", key16}, Dst: ""},
+		// aes-192-ctr
+		{Cmd: []string{in, "aes", "-e", "-m", "ctr", "-k", key24}, Dst: "*"},
+		{Cmd: []string{out, "aes", "-d", "-m", "ctr", "-k", key24}, Dst: src},
+		// aes-192-ctr invalid key
+		{Cmd: []string{in, "aes", "-e", "-m", "ctr", "-k", "1234"}, Dst: ""},
+		{Cmd: []string{in, "aes", "-d", "-m", "ctr", "-k", "1234"}, Dst: ""},
+		// aes-192-ctr invalid ciphertext
+		{Cmd: []string{in_fail, "aes", "-d", "-m", "ctr", "-k", key24}, Dst: ""},
+		// aes-256-gcm
+		{Cmd: []string{in, "aes", "-e", "-k", key32}, Dst: "*"},
+		{Cmd: []string{out, "aes", "-d", "-k", key32}, Dst: src},
+		// aes-256-gcm invalid key
+		{Cmd: []string{in, "aes", "-e", "-k", "1234"}, Dst: ""},
+		{Cmd: []string{in, "aes", "-d", "-k", "1234"}, Dst: ""},
+		// aes-256-gcm invalid ciphertext
+		{Cmd: []string{in_fail, "aes", "-d", "-k", key32}, Dst: ""},
+		// aes-256-gcm wrong key
+		{Cmd: []string{in, "aes", "-d", "-k", key24}, Dst: ""},
+		//no action
+		{Cmd: []string{in, "aes"}, Dst: ""},
+	}
+
+	for _, tst := range tests {
+		exec(tst.Cmd...)
+		test.CheckResult(out, tst.Dst, t)
+	}
 }
 
-func TestAes128CBC(t *testing.T) {
-	key := "f5f73713bc57d1cec7deb623b292bbc6"
-	exec(in, "aes", "-e", "-m", "cbc", "-k", key)
-	exec(out, "aes", "-d", "-m", "cbc", "-k", key)
-	checkResult(src, t)
-}
+// func TestAes128CBC(t *testing.T) {
+// 	key := "f5f73713bc57d1cec7deb623b292bbc6"
+// 	exec(in, "aes", "-e", "-m", "cbc", "-k", key)
+// 	exec(out, "aes", "-d", "-m", "cbc", "-k", key)
+// 	checkResult(src, t)
+// }
 
-func TestAes192CFB(t *testing.T) {
-	key := "dd4ebf0e6ced5fb8a356d1acf843d672656d2261590195d2"
-	exec(in, "aes", "-e", "-m", "cfb", "-k", key)
-	exec(out, "aes", "-d", "-m", "cfb", "-k", key)
-	checkResult(src, t)
-}
+// func TestAes192CFB(t *testing.T) {
+// 	key := "dd4ebf0e6ced5fb8a356d1acf843d672656d2261590195d2"
+// 	exec(in, "aes", "-e", "-m", "cfb", "-k", key)
+// 	exec(out, "aes", "-d", "-m", "cfb", "-k", key)
+// 	checkResult(src, t)
+// }
 
-func TestAes128OFB(t *testing.T) {
-	key := "f5f73713bc57d1cec7deb623b292bbc6"
-	exec(in, "aes", "-e", "-m", "ofb", "-k", key)
-	exec(out, "aes", "-d", "-m", "ofb", "-k", key)
-	checkResult(src, t)
-}
+// func TestAes128OFB(t *testing.T) {
+// 	key := "f5f73713bc57d1cec7deb623b292bbc6"
+// 	exec(in, "aes", "-e", "-m", "ofb", "-k", key)
+// 	exec(out, "aes", "-d", "-m", "ofb", "-k", key)
+// 	checkResult(src, t)
+// }
 
-func TestAes192CTR(t *testing.T) {
-	key := "dd4ebf0e6ced5fb8a356d1acf843d672656d2261590195d2"
-	exec(in, "aes", "-e", "-m", "ctr", "-k", key)
-	exec(out, "aes", "-d", "-m", "ctr", "-k", key)
-	checkResult(src, t)
-}
+// func TestAes192CTR(t *testing.T) {
+// 	key := "dd4ebf0e6ced5fb8a356d1acf843d672656d2261590195d2"
+// 	exec(in, "aes", "-e", "-m", "ctr", "-k", key)
+// 	exec(out, "aes", "-d", "-m", "ctr", "-k", key)
+// 	checkResult(src, t)
+// }
 
-func TestAes256GCM(t *testing.T) {
-	key := "0d94f846deac35f48e8055413c556263e647f36feb939f0c49562dcb6a718d9c"
-	exec(in, "aes", "-e", "-k", key)
-	exec(out, "aes", "-d", "-k", key)
-	checkResult(src, t)
-}
+// func TestAes256GCM(t *testing.T) {
+// 	key := "0d94f846deac35f48e8055413c556263e647f36feb939f0c49562dcb6a718d9c"
+// 	exec(in, "aes", "-e", "-k", key)
+// 	exec(out, "aes", "-d", "-k", key)
+// 	checkResult(src, t)
+// }

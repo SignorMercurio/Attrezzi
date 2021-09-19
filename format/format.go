@@ -72,10 +72,7 @@ func getInput() ([]byte, error) {
 		}
 	}
 
-	inputBytes, err = ioutil.ReadAll(input)
-	if err != nil {
-		return nil, errors.Wrap(err, "read input file")
-	}
+	inputBytes, _ = ioutil.ReadAll(input)
 
 	return inputBytes, nil
 }

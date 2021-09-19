@@ -118,24 +118,20 @@ func newAES(key []byte) (cipher.Block, int, error) {
 	return block, block.BlockSize(), nil
 }
 
-func genIV(blockSize int, plainLen int) ([]byte, []byte, error) {
+func genIV(blockSize int, plainLen int) ([]byte, []byte) {
 	// The IV needs to be unique, but not secure. Therefore it's common to
 	// include it at the beginning of the ciphertext.
 	cipherText := make([]byte, blockSize+plainLen)
 	iv := cipherText[:blockSize]
-	if _, err := io.ReadFull(rand.Reader, iv); err != nil {
-		return nil, nil, errors.Wrap(err, "generate random IV")
-	}
+	io.ReadFull(rand.Reader, iv)
 
-	return cipherText, iv, nil
+	return cipherText, iv
 }
 
-func genNonce(nonceSize int) ([]byte, error) {
+func genNonce(nonceSize int) []byte {
 	nonce := make([]byte, nonceSize)
-	if _, err := io.ReadFull(rand.Reader, nonce); err != nil {
-		return nil, errors.Wrap(err, "generate random nonce")
-	}
-	return nonce, nil
+	io.ReadFull(rand.Reader, nonce)
+	return nonce
 }
 
 func validateCiphertext(cipherText []byte, size int) error {
@@ -153,10 +149,7 @@ func aesEncryptCBC(plainText, key []byte) ([]byte, error) {
 	}
 	plainText = PKCS5Padding(plainText, blockSize)
 
-	cipherText, iv, err := genIV(blockSize, len(plainText))
-	if err != nil {
-		return nil, err
-	}
+	cipherText, iv := genIV(blockSize, len(plainText))
 
 	mode := cipher.NewCBCEncrypter(block, iv)
 	mode.CryptBlocks(cipherText[blockSize:], plainText)
@@ -190,10 +183,7 @@ func aesEncryptCFB(plainText, key []byte) ([]byte, error) {
 		return nil, err
 	}
 
-	cipherText, iv, err := genIV(blockSize, len(plainText))
-	if err != nil {
-		return nil, err
-	}
+	cipherText, iv := genIV(blockSize, len(plainText))
 
 	stream := cipher.NewCFBEncrypter(block, iv)
 	stream.XORKeyStream(cipherText[blockSize:], plainText)
@@ -226,10 +216,7 @@ func aesEncryptOFB(plainText, key []byte) ([]byte, error) {
 		return nil, err
 	}
 
-	cipherText, iv, err := genIV(blockSize, len(plainText))
-	if err != nil {
-		return nil, err
-	}
+	cipherText, iv := genIV(blockSize, len(plainText))
 
 	stream := cipher.NewOFB(block, iv)
 	stream.XORKeyStream(cipherText[blockSize:], plainText)
@@ -262,10 +249,7 @@ func aesEncryptCTR(plainText, key []byte) ([]byte, error) {
 		return nil, err
 	}
 
-	cipherText, iv, err := genIV(blockSize, len(plainText))
-	if err != nil {
-		return nil, err
-	}
+	cipherText, iv := genIV(blockSize, len(plainText))
 
 	stream := cipher.NewCTR(block, iv)
 	stream.XORKeyStream(cipherText[blockSize:], plainText)
@@ -298,15 +282,8 @@ func aesEncryptGCM(plainText, key []byte) ([]byte, error) {
 		return nil, err
 	}
 
-	gcm, err := cipher.NewGCM(block)
-	if err != nil {
-		return nil, errors.Wrap(err, "generate new GCM")
-	}
-
-	nonce, err := genNonce(gcm.NonceSize())
-	if err != nil {
-		return nil, err
-	}
+	gcm, _ := cipher.NewGCM(block)
+	nonce := genNonce(gcm.NonceSize())
 
 	return gcm.Seal(nonce, nonce, plainText, nil), nil
 }
@@ -318,10 +295,7 @@ func aesDecryptGCM(cipherText, key []byte) ([]byte, error) {
 		return nil, err
 	}
 
-	gcm, err := cipher.NewGCM(block)
-	if err != nil {
-		return nil, errors.Wrap(err, "generate new GCM")
-	}
+	gcm, _ := cipher.NewGCM(block)
 
 	nonceSize := gcm.NonceSize()
 	if err := validateCiphertext(cipherText, nonceSize); err != nil {

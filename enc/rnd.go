@@ -22,7 +22,6 @@ import (
 	"strconv"
 
 	"github.com/SignorMercurio/attrezzi/format"
-	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 )
 
@@ -40,20 +39,12 @@ func NewRndCmd() *cobra.Command {
 Example:
 	att enc rnd -l 16 -f hex
 	att enc -o out.txt rnd -l 8 -f bin`,
-		RunE: func(cmd *cobra.Command, args []string) error {
+		Run: func(cmd *cobra.Command, args []string) {
 			b := make([]byte, byteLength)
-			_, err := rand.Read(b)
-			if err != nil {
-				return errors.Wrap(err, "generate random number")
-			}
+			rand.Read(b)
 
-			rnd, err := formatRnd(b)
-			if err != nil {
-				return err
-			}
+			rnd := formatRnd(b)
 			Echo(rnd)
-
-			return nil
 		},
 	}
 	cmd.Flags().UintVarP(&byteLength, "length", "l", 8, "Byte length of generated number")
@@ -62,19 +53,16 @@ Example:
 	return cmd
 }
 
-func formatRnd(b []byte) (string, error) {
+func formatRnd(b []byte) string {
 	rnd := hex.EncodeToString(b)
 	switch numFmt {
 	case "bin":
 		rnd = format.EncodeToBin(b)
 	case "dec":
-		num, err := strconv.ParseUint(rnd, 16, 64)
-		if err != nil {
-			return "", errors.Wrap(err, "convert hex to decimal")
-		}
+		num, _ := strconv.ParseUint(rnd, 16, 64)
 		rnd = fmt.Sprintf("%d", num)
 	}
-	return rnd, nil
+	return rnd
 }
 
 func init() {
