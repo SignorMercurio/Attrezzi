@@ -90,7 +90,7 @@ func Bin2hex(arr []string) error {
 		if err != nil {
 			return errors.Wrap(err, "convert binary to hex")
 		}
-		arr[i] = strconv.FormatInt(s, 16)
+		arr[i] = fmt.Sprintf("%x", s)
 	}
 	return nil
 }

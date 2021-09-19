@@ -22,6 +22,7 @@ func exec(args ...string) {
 		NewMorCmd(),
 		NewXorCmd(),
 		NewRndCmd(),
+		NewAesCmd(),
 	)
 	rootCmd.AddCommand(encCmd)
 
@@ -121,4 +122,39 @@ func TestRndBin(t *testing.T) {
 
 	exec(in, "rnd", "-l", "8", "-f", "bin")
 	checkNotEmptyAndHasLen(64, t)
+}
+
+func TestAes128CBC(t *testing.T) {
+	key := "f5f73713bc57d1cec7deb623b292bbc6"
+	exec(in, "aes", "-e", "-m", "cbc", "-k", key)
+	exec(out, "aes", "-d", "-m", "cbc", "-k", key)
+	checkResult(src, t)
+}
+
+func TestAes192CFB(t *testing.T) {
+	key := "dd4ebf0e6ced5fb8a356d1acf843d672656d2261590195d2"
+	exec(in, "aes", "-e", "-m", "cfb", "-k", key)
+	exec(out, "aes", "-d", "-m", "cfb", "-k", key)
+	checkResult(src, t)
+}
+
+func TestAes128OFB(t *testing.T) {
+	key := "f5f73713bc57d1cec7deb623b292bbc6"
+	exec(in, "aes", "-e", "-m", "ofb", "-k", key)
+	exec(out, "aes", "-d", "-m", "ofb", "-k", key)
+	checkResult(src, t)
+}
+
+func TestAes192CTR(t *testing.T) {
+	key := "dd4ebf0e6ced5fb8a356d1acf843d672656d2261590195d2"
+	exec(in, "aes", "-e", "-m", "ctr", "-k", key)
+	exec(out, "aes", "-d", "-m", "ctr", "-k", key)
+	checkResult(src, t)
+}
+
+func TestAes256GCM(t *testing.T) {
+	key := "0d94f846deac35f48e8055413c556263e647f36feb939f0c49562dcb6a718d9c"
+	exec(in, "aes", "-e", "-k", key)
+	exec(out, "aes", "-d", "-k", key)
+	checkResult(src, t)
 }

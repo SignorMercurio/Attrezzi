@@ -18,6 +18,7 @@ package enc
 import (
 	"crypto/rand"
 	"encoding/hex"
+	"fmt"
 	"strconv"
 
 	"github.com/SignorMercurio/attrezzi/format"
@@ -71,7 +72,7 @@ func formatRnd(b []byte) (string, error) {
 		if err != nil {
 			return "", errors.Wrap(err, "convert hex to decimal")
 		}
-		rnd = strconv.FormatUint(num, 10)
+		rnd = fmt.Sprintf("%d", num)
 	}
 	return rnd, nil
 }
