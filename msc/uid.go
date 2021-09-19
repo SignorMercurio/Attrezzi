@@ -29,10 +29,8 @@ func NewUidCmd() *cobra.Command {
 Example:
 	att msc uid
 	att msc -o out.txt uid`,
-		RunE: func(cmd *cobra.Command, args []string) error {
+		Run: func(cmd *cobra.Command, args []string) {
 			Echo(uuid.NewV4().String())
-
-			return nil
 		},
 	}
 
