@@ -75,6 +75,8 @@ func exportPrivKey(key *rsa.PrivateKey) error {
 	if err != nil {
 		return errors.Wrap(err, "open privkey output file")
 	}
+	defer privKeyOut.Close()
+
 	privKeyOut.WriteString(string(keyPem))
 	return nil
 }
@@ -89,6 +91,8 @@ func exportPubKey(key *rsa.PublicKey) error {
 	if err != nil {
 		return errors.Wrap(err, "open pubkey output file")
 	}
+	defer pubKeyOut.Close()
+
 	pubKeyOut.WriteString(string(keyPem))
 	return nil
 }

@@ -1,6 +1,7 @@
 package enc
 
 import (
+	"io"
 	"strconv"
 	"strings"
 	"testing"
@@ -40,7 +41,7 @@ func TestEnc(t *testing.T) {
 	encCmd.AddCommand(NewRotCmd())
 	rootCmd.AddCommand(encCmd)
 
-	// cmd.Log.SetOutput(io.Discard)
+	cmd.Log.SetOutput(io.Discard)
 	input = nil
 	tests := []test.Test{
 		// open output fail

@@ -28,11 +28,11 @@ import (
 
 var (
 	inputFile  string
-	input      io.Reader = os.Stdin
+	input      io.ReadCloser = os.Stdin
 	inputBytes []byte
 	outputFile string
-	output     io.Writer = os.Stdout
-	fmtCmd               = NewFmtCmd()
+	output     io.WriteCloser = os.Stdout
+	fmtCmd                    = NewFmtCmd()
 )
 
 // NewFmtCmd represents the fmt command
@@ -50,6 +50,9 @@ func NewFmtCmd() *cobra.Command {
 			}
 
 			return nil
+		},
+		PersistentPostRun: func(cmd *cobra.Command, args []string) {
+			output.Close()
 		},
 	}
 
@@ -69,6 +72,7 @@ func getInput() ([]byte, error) {
 		if err != nil {
 			return nil, errors.Wrap(err, "open input file")
 		}
+		defer input.Close()
 	}
 
 	inputBytes, err = ioutil.ReadAll(input)

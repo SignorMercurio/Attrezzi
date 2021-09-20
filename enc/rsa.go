@@ -89,10 +89,10 @@ Example:
 
 func importPrivKey(filename string) (*rsa.PrivateKey, error) {
 	privKeyOut, err := os.Open(filename)
-	defer privKeyOut.Close()
 	if err != nil {
 		return nil, errors.Wrap(err, "open privkey input file")
 	}
+	defer privKeyOut.Close()
 
 	keyBytes, _ := ioutil.ReadAll(privKeyOut)
 
@@ -111,10 +111,10 @@ func importPrivKey(filename string) (*rsa.PrivateKey, error) {
 
 func importPubKey(filename string) (*rsa.PublicKey, error) {
 	pubKeyOut, err := os.Open(filename)
-	defer pubKeyOut.Close()
 	if err != nil {
 		return nil, errors.Wrap(err, "open pubkey input file")
 	}
+	defer pubKeyOut.Close()
 
 	keyBytes, _ := ioutil.ReadAll(pubKeyOut)
 

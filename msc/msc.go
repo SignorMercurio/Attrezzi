@@ -29,8 +29,8 @@ var (
 	// inputFile  string
 	// inputBytes []byte
 	outputFile string
-	output     io.Writer = os.Stdout
-	mscCmd               = NewMscCmd()
+	output     io.WriteCloser = os.Stdout
+	mscCmd                    = NewMscCmd()
 )
 
 // NewMscCmd represents the msc command
@@ -53,6 +53,9 @@ func NewMscCmd() *cobra.Command {
 
 			return nil
 		},
+		PersistentPostRun: func(cmd *cobra.Command, args []string) {
+			output.Close()
+		},
 	}
 
 	// cmd.PersistentFlags().StringVarP(&inputFile, "input", "i", "", "Read input from file")
@@ -69,10 +72,10 @@ func NewMscCmd() *cobra.Command {
 
 // 	if inputFile != "" {
 // 		input, err = os.Open(inputFile)
-// 		defer input.Close()
 // 		if err != nil {
 // 			return nil, errors.Wrap(err, "open input file")
 // 		}
+// 		defer input.Close()
 // 	}
 
 // 	inputBytes, _ = ioutil.ReadAll(input)

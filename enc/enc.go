@@ -28,11 +28,11 @@ import (
 
 var (
 	inputFile  string
-	input      io.Reader = os.Stdin
+	input      io.ReadCloser = os.Stdin
 	inputBytes []byte
 	outputFile string
-	output     io.Writer = os.Stdout
-	encCmd               = NewEncCmd()
+	output     io.WriteCloser = os.Stdout
+	encCmd                    = NewEncCmd()
 )
 
 // NewEncCmd represents the enc command
@@ -55,6 +55,9 @@ func NewEncCmd() *cobra.Command {
 
 			return nil
 		},
+		PersistentPostRun: func(cmd *cobra.Command, args []string) {
+			output.Close()
+		},
 	}
 
 	cmd.PersistentFlags().StringVarP(&inputFile, "input", "i", "", "Read input from file")
@@ -73,6 +76,7 @@ func getInput() ([]byte, error) {
 		if err != nil {
 			return nil, errors.Wrap(err, "open input file")
 		}
+		defer input.Close()
 	}
 
 	inputBytes, err = ioutil.ReadAll(input)
