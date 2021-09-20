@@ -60,11 +60,13 @@ Example:
 	return cmd
 }
 
+// genRSAKeyPair returns an RSA Keypair
 func genRSAKeyPair() (*rsa.PrivateKey, *rsa.PublicKey) {
 	privateKey, _ := rsa.GenerateKey(rand.Reader, bits)
 	return privateKey, &privateKey.PublicKey
 }
 
+// exportPrivKey writes the private key to a file
 func exportPrivKey(key *rsa.PrivateKey) error {
 	keyBytes := x509.MarshalPKCS1PrivateKey(key)
 	keyPem := pem.EncodeToMemory(&pem.Block{
@@ -81,6 +83,7 @@ func exportPrivKey(key *rsa.PrivateKey) error {
 	return nil
 }
 
+// exportPubKey writes the public key to a file
 func exportPubKey(key *rsa.PublicKey) error {
 	keyBytes := x509.MarshalPKCS1PublicKey(key)
 	keyPem := pem.EncodeToMemory(&pem.Block{

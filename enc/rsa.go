@@ -16,11 +16,15 @@ limitations under the License.
 package enc
 
 import (
+	"crypto/md5"
 	"crypto/rand"
 	"crypto/rsa"
+	"crypto/sha1"
 	"crypto/sha256"
+	"crypto/sha512"
 	"crypto/x509"
 	"encoding/pem"
+	"hash"
 	"io/ioutil"
 	"os"
 
@@ -29,7 +33,8 @@ import (
 )
 
 var (
-	rsaMode string
+	rsaMode  string
+	hashFunc string
 )
 
 // NewRsaCmd represents the rsa command
@@ -53,7 +58,7 @@ Example:
 				case "pkcs1v15":
 					enced, _ = rsa.EncryptPKCS1v15(rand.Reader, pub, inputBytes)
 				default:
-					enced, _ = rsa.EncryptOAEP(sha256.New(), rand.Reader, pub, inputBytes, nil)
+					enced, _ = rsa.EncryptOAEP(getHash(), rand.Reader, pub, inputBytes, nil)
 				}
 				Echo(string(enced))
 			} else if dec {
@@ -68,7 +73,7 @@ Example:
 				case "pkcs1v15":
 					deced, err = rsa.DecryptPKCS1v15(rand.Reader, priv, inputBytes)
 				default:
-					deced, err = rsa.DecryptOAEP(sha256.New(), rand.Reader, priv, inputBytes, nil)
+					deced, err = rsa.DecryptOAEP(getHash(), rand.Reader, priv, inputBytes, nil)
 				}
 				Echo(string(deced))
 			} else {
@@ -81,12 +86,14 @@ Example:
 	cmd.Flags().StringVar(&privKeyPath, "priv", "./priv.key", "Path of existing private key")
 	cmd.Flags().StringVar(&pubKeyPath, "pub", "./pubkey.pub", "Path of existing public key")
 	cmd.Flags().StringVarP(&rsaMode, "mode", "m", "oaep", "RSA encryption mode: oaep / pkcs1v15")
+	cmd.Flags().StringVar(&hashFunc, "hash", "sha256", "Hash function to use in OAEP encryption: md5 / sha1 / sha256 / sha384 / sha512")
 	cmd.Flags().BoolVarP(&enc, "encrypt", "e", false, "RSA encryption")
 	cmd.Flags().BoolVarP(&dec, "decrypt", "d", false, "RSA decryption")
 
 	return cmd
 }
 
+// importPrivKey loads the private key from a file
 func importPrivKey(filename string) (*rsa.PrivateKey, error) {
 	privKeyOut, err := os.Open(filename)
 	if err != nil {
@@ -109,6 +116,7 @@ func importPrivKey(filename string) (*rsa.PrivateKey, error) {
 	return privKey, nil
 }
 
+// importPubKey loads the public  key from a file
 func importPubKey(filename string) (*rsa.PublicKey, error) {
 	pubKeyOut, err := os.Open(filename)
 	if err != nil {
@@ -129,6 +137,22 @@ func importPubKey(filename string) (*rsa.PublicKey, error) {
 	}
 
 	return pubKey, nil
+}
+
+// getHash chooses the hash function according to the user input
+func getHash() hash.Hash {
+	switch hashFunc {
+	case "md5":
+		return md5.New()
+	case "sha1":
+		return sha1.New()
+	case "sha384":
+		return sha512.New384()
+	case "sha512":
+		return sha512.New()
+	default:
+		return sha256.New()
+	}
 }
 
 func init() {

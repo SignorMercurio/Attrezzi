@@ -236,9 +236,21 @@ func TestRkgAndRsa(t *testing.T) {
 		{Cmd: []string{in, "rsa", "--pub", pubKeyOut, "--priv", "./testdata/priv_b1.key", "-d"}, Dst: ""},
 		// modified privkey
 		{Cmd: []string{in, "rsa", "--pub", pubKeyOut, "--priv", pubKeyOut, "-d"}, Dst: ""},
-		// rsa-oaep
+		// rsa-oaep with sha256
 		{Cmd: []string{in, "rsa", "--pub", pubKeyOut, "--priv", privKeyOut, "-e"}, Dst: "*"},
 		{Cmd: []string{out, "rsa", "--pub", pubKeyOut, "--priv", privKeyOut, "-d"}, Dst: src},
+		// with md5
+		{Cmd: []string{in, "rsa", "--pub", pubKeyOut, "--priv", privKeyOut, "-e", "--hash", "md5"}, Dst: "*"},
+		{Cmd: []string{out, "rsa", "--pub", pubKeyOut, "--priv", privKeyOut, "-d", "--hash", "md5"}, Dst: src},
+		// with sha1
+		{Cmd: []string{in, "rsa", "--pub", pubKeyOut, "--priv", privKeyOut, "-e", "--hash", "sha1"}, Dst: "*"},
+		{Cmd: []string{out, "rsa", "--pub", pubKeyOut, "--priv", privKeyOut, "-d", "--hash", "sha1"}, Dst: src},
+		// with sha384
+		{Cmd: []string{in, "rsa", "--pub", pubKeyOut, "--priv", privKeyOut, "-e", "--hash", "sha384"}, Dst: "*"},
+		{Cmd: []string{out, "rsa", "--pub", pubKeyOut, "--priv", privKeyOut, "-d", "--hash", "sha384"}, Dst: src},
+		// with sha512
+		{Cmd: []string{in, "rsa", "--pub", pubKeyOut, "--priv", privKeyOut, "-e", "--hash", "sha512"}, Dst: "*"},
+		{Cmd: []string{out, "rsa", "--pub", pubKeyOut, "--priv", privKeyOut, "-d", "--hash", "sha512"}, Dst: src},
 		// rsa-pkcs1v15
 		{Cmd: []string{in, "rsa", "--pub", pubKeyOut, "--priv", privKeyOut, "-e", "-m", "pkcs1v15"}, Dst: "*"},
 		{Cmd: []string{out, "rsa", "--pub", pubKeyOut, "--priv", privKeyOut, "-d", "-m", "pkcs1v15"}, Dst: src},
