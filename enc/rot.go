@@ -48,8 +48,8 @@ Example:
 			return nil
 		},
 	}
-	cmd.Flags().BoolVarP(&enc, "encrypt", "e", false, "ROTx Encryption")
-	cmd.Flags().BoolVarP(&dec, "decrypt", "d", false, "ROTx Decryption")
+	cmd.Flags().BoolVarP(&enc, "encrypt", "e", false, "ROTx encryption")
+	cmd.Flags().BoolVarP(&dec, "decrypt", "d", false, "ROTx decryption")
 	cmd.Flags().Uint8VarP(&rotNumber, "number", "n", 13, "Number to shift")
 
 	return cmd

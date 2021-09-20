@@ -1,7 +1,6 @@
 package enc
 
 import (
-	"io"
 	"strconv"
 	"strings"
 	"testing"
@@ -25,6 +24,8 @@ func exec(args ...string) {
 		NewXorCmd(),
 		NewRndCmd(),
 		NewAesCmd(),
+		NewRkgCmd(),
+		NewRsaCmd(),
 	)
 	rootCmd.AddCommand(encCmd)
 
@@ -39,7 +40,7 @@ func TestEnc(t *testing.T) {
 	encCmd.AddCommand(NewRotCmd())
 	rootCmd.AddCommand(encCmd)
 
-	cmd.Log.SetOutput(io.Discard)
+	// cmd.Log.SetOutput(io.Discard)
 	input = nil
 	tests := []test.Test{
 		// open output fail
@@ -211,37 +212,41 @@ func TestAES(t *testing.T) {
 	}
 }
 
-// func TestAes128CBC(t *testing.T) {
-// 	key := "f5f73713bc57d1cec7deb623b292bbc6"
-// 	exec(in, "aes", "-e", "-m", "cbc", "-k", key)
-// 	exec(out, "aes", "-d", "-m", "cbc", "-k", key)
-// 	checkResult(src, t)
-// }
+func TestRkgAndRsa(t *testing.T) {
+	in_empty := "/dev/null"
+	bla := "blabla/bla.txt"
+	pubKeyOut := "./testdata/pubkey.pub"
+	privKeyOut := "./testdata/priv.key"
 
-// func TestAes192CFB(t *testing.T) {
-// 	key := "dd4ebf0e6ced5fb8a356d1acf843d672656d2261590195d2"
-// 	exec(in, "aes", "-e", "-m", "cfb", "-k", key)
-// 	exec(out, "aes", "-d", "-m", "cfb", "-k", key)
-// 	checkResult(src, t)
-// }
+	tests := []test.Test{
+		// rkg
+		{Cmd: []string{in_empty, "rkg", "--pub", pubKeyOut, "--priv", bla}, Dst: ""},
+		{Cmd: []string{in_empty, "rkg", "--pub", bla, "--priv", privKeyOut}, Dst: ""},
+		{Cmd: []string{in_empty, "rkg", "--pub", pubKeyOut, "--priv", privKeyOut}, Dst: ""},
+		// invalid pubkey
+		{Cmd: []string{in, "rsa", "--pub", bla, "--priv", privKeyOut, "-e"}, Dst: ""},
+		// damaged pubkey
+		{Cmd: []string{in, "rsa", "--pub", "./testdata/pubkey_b1.pub", "--priv", privKeyOut, "-e"}, Dst: ""},
+		// modified pubkey
+		{Cmd: []string{in, "rsa", "--pub", privKeyOut, "--priv", privKeyOut, "-e"}, Dst: ""},
+		// invalid privkey
+		{Cmd: []string{in, "rsa", "--pub", pubKeyOut, "--priv", bla, "-d"}, Dst: ""},
+		// damaged privkey
+		{Cmd: []string{in, "rsa", "--pub", pubKeyOut, "--priv", "./testdata/priv_b1.key", "-d"}, Dst: ""},
+		// modified privkey
+		{Cmd: []string{in, "rsa", "--pub", pubKeyOut, "--priv", pubKeyOut, "-d"}, Dst: ""},
+		// rsa-oaep
+		{Cmd: []string{in, "rsa", "--pub", pubKeyOut, "--priv", privKeyOut, "-e"}, Dst: "*"},
+		{Cmd: []string{out, "rsa", "--pub", pubKeyOut, "--priv", privKeyOut, "-d"}, Dst: src},
+		// rsa-pkcs1v15
+		{Cmd: []string{in, "rsa", "--pub", pubKeyOut, "--priv", privKeyOut, "-e", "-m", "pkcs1v15"}, Dst: "*"},
+		{Cmd: []string{out, "rsa", "--pub", pubKeyOut, "--priv", privKeyOut, "-d", "-m", "pkcs1v15"}, Dst: src},
+		// no action
+		{Cmd: []string{in, "rsa"}, Dst: ""},
+	}
 
-// func TestAes128OFB(t *testing.T) {
-// 	key := "f5f73713bc57d1cec7deb623b292bbc6"
-// 	exec(in, "aes", "-e", "-m", "ofb", "-k", key)
-// 	exec(out, "aes", "-d", "-m", "ofb", "-k", key)
-// 	checkResult(src, t)
-// }
-
-// func TestAes192CTR(t *testing.T) {
-// 	key := "dd4ebf0e6ced5fb8a356d1acf843d672656d2261590195d2"
-// 	exec(in, "aes", "-e", "-m", "ctr", "-k", key)
-// 	exec(out, "aes", "-d", "-m", "ctr", "-k", key)
-// 	checkResult(src, t)
-// }
-
-// func TestAes256GCM(t *testing.T) {
-// 	key := "0d94f846deac35f48e8055413c556263e647f36feb939f0c49562dcb6a718d9c"
-// 	exec(in, "aes", "-e", "-k", key)
-// 	exec(out, "aes", "-d", "-k", key)
-// 	checkResult(src, t)
-// }
+	for _, tst := range tests {
+		exec(tst.Cmd...)
+		test.CheckResult(out, tst.Dst, t)
+	}
+}

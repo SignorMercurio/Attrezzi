@@ -31,6 +31,15 @@ func CheckResult(filename string, expected string, t *testing.T) {
 	}
 }
 
+// func CheckContains(filename string, expected string, t *testing.T) {
+// 	res := ReadOutput(filename, t)
+
+// 	result := string(res)
+// 	if !strings.Contains(result, expected) {
+// 		t.Errorf(`expected to contain "%s", got "%s"`, expected, result)
+// 	}
+// }
+
 func CheckNotEmptyAndHasLen(filename string, expectedMinLen uint, expectedMaxLen uint, t *testing.T) {
 	empty := make([]byte, expectedMaxLen)
 	b := ReadOutput(filename, t)
