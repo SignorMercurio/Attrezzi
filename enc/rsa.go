@@ -16,15 +16,10 @@ limitations under the License.
 package enc
 
 import (
-	"crypto/md5"
 	"crypto/rand"
 	"crypto/rsa"
-	"crypto/sha1"
-	"crypto/sha256"
-	"crypto/sha512"
 	"crypto/x509"
 	"encoding/pem"
-	"hash"
 	"io/ioutil"
 	"os"
 
@@ -137,22 +132,6 @@ func importPubKey(filename string) (*rsa.PublicKey, error) {
 	}
 
 	return pubKey, nil
-}
-
-// getHash chooses the hash function according to the user input
-func getHash() hash.Hash {
-	switch hashFunc {
-	case "md5":
-		return md5.New()
-	case "sha1":
-		return sha1.New()
-	case "sha384":
-		return sha512.New384()
-	case "sha512":
-		return sha512.New()
-	default:
-		return sha256.New()
-	}
 }
 
 func init() {

@@ -27,6 +27,7 @@ func exec(args ...string) {
 		NewAesCmd(),
 		NewRkgCmd(),
 		NewRsaCmd(),
+		NewHshCmd(),
 	)
 	rootCmd.AddCommand(encCmd)
 
@@ -258,6 +259,25 @@ func TestRkgAndRsa(t *testing.T) {
 		{Cmd: []string{in, "rsa"}, Dst: ""},
 	}
 
+	for _, tst := range tests {
+		exec(tst.Cmd...)
+		test.CheckResult(out, tst.Dst, t)
+	}
+}
+
+func TestHsh(t *testing.T) {
+	tests := []test.Test{
+		// sha256
+		{Cmd: []string{in, "hsh"}, Dst: "982b10efe4fece5c4d91b7e90bfc6c1b5c0ada421ad67689d6c19c2b2873b0a5"},
+		// md5
+		{Cmd: []string{in, "hsh", "--hash", "md5"}, Dst: "512ece16e11bcacb827a923093e5ea80"},
+		// sha1
+		{Cmd: []string{in, "hsh", "--hash", "sha1"}, Dst: "a9fa680cdc75a63f562d4f76860d51ef572e6eb4"},
+		// sha384
+		{Cmd: []string{in, "hsh", "--hash", "sha384"}, Dst: "2228c508f652b7f1e9b06b87d76b9a23c4e732f14b2c81e39fb35d080e5f981fa9e13fa6536ee680b179ab2b74785edc"},
+		// sha512
+		{Cmd: []string{in, "hsh", "--hash", "sha512"}, Dst: "da03b6f9510a7325fdd38677e1332e4179bc99ab4c828e44307434e29e8ac7fcf5a7f0077632797041e689b2f9cd9067d92c49b208255514c66b5bc86ce4e5ec"},
+	}
 	for _, tst := range tests {
 		exec(tst.Cmd...)
 		test.CheckResult(out, tst.Dst, t)
