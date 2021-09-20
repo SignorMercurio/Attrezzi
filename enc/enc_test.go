@@ -40,11 +40,14 @@ func TestEnc(t *testing.T) {
 	rootCmd.AddCommand(encCmd)
 
 	cmd.Log.SetOutput(io.Discard)
+	input = nil
 	tests := []test.Test{
 		// open output fail
 		{Cmd: []string{"enc", "-o", "bla/blabla.txt", "-i", in, "rot", "-e"}, Dst: ""},
 		// open input fail
 		{Cmd: []string{"enc", "-i", "bla/blabla.txt", "-o", out, "rot", "-e"}, Dst: ""},
+		// read input fail
+		{Cmd: []string{"enc", "-i", "", "-o", out, "rot", "-e"}, Dst: ""},
 	}
 
 	for _, tst := range tests {

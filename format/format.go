@@ -28,6 +28,7 @@ import (
 
 var (
 	inputFile  string
+	input      io.Reader = os.Stdin
 	inputBytes []byte
 	outputFile string
 	output     io.Writer = os.Stdout
@@ -62,17 +63,18 @@ func NewFmtCmd() *cobra.Command {
 func getInput() ([]byte, error) {
 	var err error
 	var inputBytes []byte
-	input := os.Stdin
 
 	if inputFile != "" {
 		input, err = os.Open(inputFile)
-		defer input.Close()
 		if err != nil {
 			return nil, errors.Wrap(err, "open input file")
 		}
 	}
 
-	inputBytes, _ = ioutil.ReadAll(input)
+	inputBytes, err = ioutil.ReadAll(input)
+	if err != nil {
+		return nil, errors.Wrap(err, "read input file")
+	}
 
 	return inputBytes, nil
 }

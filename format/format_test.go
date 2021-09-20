@@ -44,11 +44,14 @@ func TestFormat(t *testing.T) {
 	rootCmd.AddCommand(fmtCmd)
 
 	cmd.Log.SetOutput(io.Discard)
+	input = nil
 	tests := []test.Test{
 		// open output fail
 		{Cmd: []string{"fmt", "-o", "bla/blabla.txt", "-i", in, "b64", "-e"}, Dst: ""},
 		// open input fail
 		{Cmd: []string{"fmt", "-i", "bla/blabla.txt", "-o", out, "b64", "-e"}, Dst: ""},
+		// read input fail
+		{Cmd: []string{"fmt", "-i", "", "-o", out, "b64", "-e"}, Dst: ""},
 	}
 
 	for _, tst := range tests {

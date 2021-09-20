@@ -25,8 +25,8 @@ Attrezzi is a CLI tool integrated with multiple features useful for hacking.
   - [x] `xor` | XOR operation
   - [x] `rnd` | Random number generation
   - [x] `aes` | AES encryption / decryption
-  - [ ] `rsa` | RSA encryption / decryption
   - [ ] `rkg` | RSA key generation
+  - [ ] `rsa` | RSA encryption / decryption
   - [ ] `md5` | MD5 hash function
   - [ ] `sh1` | SHA1 hash function
   - [ ] `sh2` | SHA256 hash function

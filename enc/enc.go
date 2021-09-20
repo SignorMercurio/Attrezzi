@@ -28,6 +28,7 @@ import (
 
 var (
 	inputFile  string
+	input      io.Reader = os.Stdin
 	inputBytes []byte
 	outputFile string
 	output     io.Writer = os.Stdout
@@ -41,7 +42,7 @@ func NewEncCmd() *cobra.Command {
 		Short: "enc helps to deal with cryptographic operations",
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 			var err error
-			if cmd.Use != "rnd" {
+			if cmd.Use != "rnd" && cmd.Use != "rkg" {
 				inputBytes, err = getInput()
 				if err != nil {
 					return err
@@ -66,17 +67,18 @@ func NewEncCmd() *cobra.Command {
 func getInput() ([]byte, error) {
 	var err error
 	var inputBytes []byte
-	input := os.Stdin
 
 	if inputFile != "" {
 		input, err = os.Open(inputFile)
-		defer input.Close()
 		if err != nil {
 			return nil, errors.Wrap(err, "open input file")
 		}
 	}
 
-	inputBytes, _ = ioutil.ReadAll(input)
+	inputBytes, err = ioutil.ReadAll(input)
+	if err != nil {
+		return nil, errors.Wrap(err, "read input file")
+	}
 
 	return inputBytes, nil
 }
