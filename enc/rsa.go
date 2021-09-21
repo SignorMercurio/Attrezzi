@@ -70,6 +70,9 @@ Example:
 				default:
 					deced, err = rsa.DecryptOAEP(getHash(), rand.Reader, priv, inputBytes, nil)
 				}
+				if err != nil {
+					return err
+				}
 				Echo(string(deced))
 			} else {
 				NoActionSpecified()

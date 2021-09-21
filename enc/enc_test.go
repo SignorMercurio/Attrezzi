@@ -240,6 +240,8 @@ func TestRkgAndRsa(t *testing.T) {
 		// rsa-oaep with sha256
 		{Cmd: []string{in, "rsa", "--pub", pubKeyOut, "--priv", privKeyOut, "-e"}, Dst: "*"},
 		{Cmd: []string{out, "rsa", "--pub", pubKeyOut, "--priv", privKeyOut, "-d"}, Dst: src},
+		// wrong privKey
+		{Cmd: []string{out, "rsa", "--pub", pubKeyOut, "--priv", "./testdata/priv_b2.key", "-d"}, Dst: ""},
 		// with md5
 		{Cmd: []string{in, "rsa", "--pub", pubKeyOut, "--priv", privKeyOut, "-e", "--hash", "md5"}, Dst: "*"},
 		{Cmd: []string{out, "rsa", "--pub", pubKeyOut, "--priv", privKeyOut, "-d", "--hash", "md5"}, Dst: src},
