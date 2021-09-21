@@ -19,16 +19,16 @@ Attrezzi is a CLI tool integrated with multiple features useful for hacking.
   - [x] `url` | URL encode / decode
   - [x] `htm` | HTML Entity encode / decode
   - [x] `uni` | Unicode conversion
-- [ ] `enc` | cryptographic operations
+- [x] `enc` | cryptographic operations
   - [x] `rot` | ROT13-like encryption / decryption
   - [x] `mor` | Morse code transformation
   - [x] `xor` | XOR operation
   - [x] `rnd` | Random number generation
   - [x] `aes` | AES encryption / decryption
-  - [x] `rkg` | RSA key generation
+  - [x] `akg` | Asymmetric encryption key generation
   - [x] `rsa` | RSA encryption / decryption
   - [x] `hsh` | Hash function calculation
-  - [ ] `jwt` | JWT-related operation
+  - [x] `jwt` | JWT-related operation
 - [ ] `net` | network-related operations
   - [ ] ...
 - [ ] `msc` | miscellaneous operations

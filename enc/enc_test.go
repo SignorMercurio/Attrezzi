@@ -11,9 +11,13 @@ import (
 )
 
 var (
-	in  = "./testdata/in.txt"
-	out = "./testdata/out.txt"
-	src = "Hello 世界 123"
+	in           = "./testdata/in.txt"
+	out          = "./testdata/out.txt"
+	pubKeyOut    = "./testdata/pub.pem"
+	privKeyOut   = "./testdata/priv.pem"
+	ecPubKeyOut  = "./testdata/ecpub.pem"
+	ecPrivKeyOut = "./testdata/ecpriv.pem"
+	src          = "Hello 世界 123"
 )
 
 func exec(args ...string) {
@@ -25,7 +29,7 @@ func exec(args ...string) {
 		NewXorCmd(),
 		NewRndCmd(),
 		NewAesCmd(),
-		NewRkgCmd(),
+		NewAkgCmd(),
 		NewRsaCmd(),
 		NewHshCmd(),
 		NewJwtCmd(),
@@ -215,17 +219,32 @@ func TestAES(t *testing.T) {
 	}
 }
 
-func TestRkgAndRsa(t *testing.T) {
+func TestAkg(t *testing.T) {
 	in_empty := "/dev/null"
 	bla := "blabla/bla.txt"
-	pubKeyOut := "./testdata/pub.pem"
-	privKeyOut := "./testdata/priv.pem"
 
 	tests := []test.Test{
-		// rkg
-		{Cmd: []string{in_empty, "rkg", "--pub", pubKeyOut, "--priv", bla}, Dst: ""},
-		{Cmd: []string{in_empty, "rkg", "--pub", bla, "--priv", privKeyOut}, Dst: ""},
-		{Cmd: []string{in_empty, "rkg", "--pub", pubKeyOut, "--priv", privKeyOut}, Dst: ""},
+		// rsa
+		{Cmd: []string{in_empty, "akg", "--pub", pubKeyOut, "--priv", bla}, Dst: ""},
+		{Cmd: []string{in_empty, "akg", "--pub", bla, "--priv", privKeyOut}, Dst: ""},
+		{Cmd: []string{in_empty, "akg", "--pub", pubKeyOut, "--priv", privKeyOut}, Dst: ""},
+		// ecdsa
+		{Cmd: []string{in_empty, "akg", "--pub", "./testdata/ecpub.pem", "--priv", "./testdata/ecpriv.pem", "-a", "ecdsa", "-b", "224"}, Dst: ""},
+		{Cmd: []string{in_empty, "akg", "--pub", "./testdata/ecpub_384.pem", "--priv", "./testdata/ecpriv_384.pem", "-a", "ecdsa", "-b", "384"}, Dst: ""},
+		{Cmd: []string{in_empty, "akg", "--pub", "./testdata/ecpub_521.pem", "--priv", "./testdata/ecpriv_521.pem", "-a", "ecdsa", "-b", "521"}, Dst: ""},
+		{Cmd: []string{in_empty, "akg", "--pub", "./testdata/ecpub.pem", "--priv", "./testdata/ecpriv.pem", "-a", "ecdsa"}, Dst: ""},
+	}
+
+	for _, tst := range tests {
+		exec(tst.Cmd...)
+		test.CheckResult(out, tst.Dst, t)
+	}
+}
+
+func TestRsa(t *testing.T) {
+	bla := "blabla/bla.txt"
+
+	tests := []test.Test{
 		// invalid pubkey
 		{Cmd: []string{in, "rsa", "--pub", bla, "--priv", privKeyOut, "-e"}, Dst: ""},
 		// damaged pubkey
@@ -236,12 +255,12 @@ func TestRkgAndRsa(t *testing.T) {
 		{Cmd: []string{in, "rsa", "--pub", pubKeyOut, "--priv", bla, "-d"}, Dst: ""},
 		// damaged privkey
 		{Cmd: []string{in, "rsa", "--pub", pubKeyOut, "--priv", "./testdata/priv_b1.pem", "-d"}, Dst: ""},
-		// modified privkey
-		{Cmd: []string{in, "rsa", "--pub", pubKeyOut, "--priv", pubKeyOut, "-d"}, Dst: ""},
+		// wrong ciphertext
+		{Cmd: []string{out, "rsa", "--pub", pubKeyOut, "--priv", privKeyOut, "-d"}, Dst: ""},
 		// rsa-oaep with sha256
 		{Cmd: []string{in, "rsa", "--pub", pubKeyOut, "--priv", privKeyOut, "-e"}, Dst: "*"},
 		{Cmd: []string{out, "rsa", "--pub", pubKeyOut, "--priv", privKeyOut, "-d"}, Dst: src},
-		// wrong privKey
+		// modified privKey
 		{Cmd: []string{out, "rsa", "--pub", pubKeyOut, "--priv", "./testdata/priv_b2.pem", "-d"}, Dst: ""},
 		// with md5
 		{Cmd: []string{in, "rsa", "--pub", pubKeyOut, "--priv", privKeyOut, "-e", "--hash", "md5"}, Dst: "*"},
@@ -295,8 +314,6 @@ func TestJwt(t *testing.T) {
 }`
 	key := "./testdata/in_xor.txt"
 	bla := "blabla/bla.txt"
-	pubKeyOut := "./testdata/pub.pem"
-	privKeyOut := "./testdata/priv.pem"
 
 	tests := []test.Test{
 		// unmarshal json fail
@@ -339,6 +356,20 @@ func TestJwt(t *testing.T) {
 		// ps512
 		{Cmd: []string{in, "jwt", "-k", privKeyOut, "-s", "-m", "ps512"}, Dst: "*"},
 		{Cmd: []string{out, "jwt", "-k", pubKeyOut, "-v", "-m", "ps512"}, Dst: src},
+		// es256
+		// parse privKey fail
+		{Cmd: []string{in, "jwt", "-k", "./testdata/ecpriv_b1.pem", "-s", "-m", "es256"}, Dst: ""},
+		// parse pubKey fail
+		{Cmd: []string{"./testdata/out_jwt_b3.txt", "jwt", "-k", "./testdata/ecpub_b1.pem", "-v", "-m", "es256"}, Dst: ""},
+		// default
+		{Cmd: []string{in, "jwt", "-k", ecPrivKeyOut, "-s", "-m", "es256"}, Dst: "*"},
+		{Cmd: []string{out, "jwt", "-k", ecPubKeyOut, "-v", "-m", "es256"}, Dst: src},
+		// es384
+		{Cmd: []string{in, "jwt", "-k", "./testdata/ecpriv_384.pem", "-s", "-m", "es384"}, Dst: "*"},
+		{Cmd: []string{out, "jwt", "-k", "./testdata/ecpub_384.pem", "-v", "-m", "es384"}, Dst: src},
+		// es512
+		{Cmd: []string{in, "jwt", "-k", "./testdata/ecpriv_521.pem", "-s", "-m", "es512"}, Dst: "*"},
+		{Cmd: []string{out, "jwt", "-k", "./testdata/ecpub_521.pem", "-v", "-m", "es512"}, Dst: src},
 		// no action
 		{Cmd: []string{in, "jwt"}, Dst: ""},
 	}

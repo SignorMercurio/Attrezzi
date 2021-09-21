@@ -5,3 +5,9 @@ bin
 *.out
 priv.pem
 pub.pem
+ecpriv.pem
+ecpub.pem
+ecpriv_384.pem
+ecpub_384.pem
+ecpriv_521.pem
+ecpub_521.pem

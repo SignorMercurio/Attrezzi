@@ -106,12 +106,12 @@ func importPrivKey(filename string) (*rsa.PrivateKey, error) {
 		return nil, errors.New("decode pubkey PEM")
 	}
 
-	privKey, err := x509.ParsePKCS1PrivateKey(block.Bytes)
+	privKey, err := x509.ParsePKCS8PrivateKey(block.Bytes)
 	if err != nil {
 		return nil, errors.Wrap(err, "parse privkey")
 	}
 
-	return privKey, nil
+	return privKey.(*rsa.PrivateKey), nil
 }
 
 // importPubKey loads the public  key from a file

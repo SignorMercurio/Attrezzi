@@ -154,7 +154,7 @@ func sign() (string, error) {
 func verify(tokenString string) (string, error) {
 	token, err := jwt.Parse(tokenString, func(t *jwt.Token) (interface{}, error) {
 		if strings.ToLower(t.Method.Alg()) != method {
-			return nil, errors.New("validate signing alg")
+			return nil, errors.New("Invalid signing alg")
 		}
 		return readKey()
 	})

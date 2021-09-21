@@ -16,6 +16,8 @@ limitations under the License.
 package enc
 
 import (
+	"crypto/ecdsa"
+	"crypto/elliptic"
 	"crypto/rand"
 	"crypto/rsa"
 	"crypto/x509"
@@ -28,20 +30,21 @@ import (
 
 var (
 	bits        int
+	alg         string
 	privKeyPath string
 	pubKeyPath  string
 )
 
-// NewRkgCmd represents the rkg command
-func NewRkgCmd() *cobra.Command {
+// NewAkgCmd represents the akg command
+func NewAkgCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "rkg",
-		Short: "RSA key generation",
-		Long: `RSA key generation
+		Use:   "akg",
+		Short: "Asymmetric encryption key generation",
+		Long: `Asymmetric encryption key generation
 Example:
-	att enc -o pubkey.pub rkg -p priv.key -b 4096`,
+	att enc -o pubkey.pub akg -p priv.key -b 4096`,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			priv, pub := genRSAKeyPair()
+			priv, pub := genKeyPair()
 			err := exportPrivKey(priv)
 			if err != nil {
 				return err
@@ -53,24 +56,44 @@ Example:
 			return nil
 		},
 	}
-	cmd.Flags().IntVarP(&bits, "bits", "b", 2048, "Key bits")
+	cmd.Flags().IntVarP(&bits, "bits", "b", 2048, "Key bits, or Curve name in ECDSA: 224 / 256 / 384 / 521")
+	cmd.Flags().StringVarP(&alg, "algorithm", "a", "rsa", "Encryption algorithm to use: rsa / ecdsa")
 	cmd.Flags().StringVar(&privKeyPath, "priv", "./priv.pem", "Path to store private key")
 	cmd.Flags().StringVar(&pubKeyPath, "pub", "./pub.pem", "Path to store public key")
 
 	return cmd
 }
 
-// genRSAKeyPair returns an RSA Keypair
-func genRSAKeyPair() (*rsa.PrivateKey, *rsa.PublicKey) {
-	privateKey, _ := rsa.GenerateKey(rand.Reader, bits)
-	return privateKey, &privateKey.PublicKey
+func getCurve() elliptic.Curve {
+	switch bits {
+	case 224:
+		return elliptic.P224()
+	case 384:
+		return elliptic.P384()
+	case 521:
+		return elliptic.P521()
+	default:
+		return elliptic.P256()
+	}
+}
+
+// genKeyPair returns a Keypair
+func genKeyPair() (interface{}, interface{}) {
+	switch alg {
+	case "ecdsa":
+		privateKey, _ := ecdsa.GenerateKey(getCurve(), rand.Reader)
+		return privateKey, &privateKey.PublicKey
+	default:
+		privateKey, _ := rsa.GenerateKey(rand.Reader, bits)
+		return privateKey, &privateKey.PublicKey
+	}
 }
 
 // exportPrivKey writes the private key to a file
-func exportPrivKey(key *rsa.PrivateKey) error {
-	keyBytes := x509.MarshalPKCS1PrivateKey(key)
+func exportPrivKey(key interface{}) error {
+	keyBytes, _ := x509.MarshalPKCS8PrivateKey(key)
 	keyPem := pem.EncodeToMemory(&pem.Block{
-		Type:  "RSA PRIVATE KEY",
+		Type:  "PRIVATE KEY",
 		Bytes: keyBytes,
 	})
 	privKeyOut, err := os.OpenFile(privKeyPath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0600)
@@ -84,7 +107,7 @@ func exportPrivKey(key *rsa.PrivateKey) error {
 }
 
 // exportPubKey writes the public key to a file
-func exportPubKey(key *rsa.PublicKey) error {
+func exportPubKey(key interface{}) error {
 	keyBytes, _ := x509.MarshalPKIXPublicKey(key)
 	keyPem := pem.EncodeToMemory(&pem.Block{
 		Type:  "PUBLIC KEY",
@@ -101,5 +124,5 @@ func exportPubKey(key *rsa.PublicKey) error {
 }
 
 func init() {
-	encCmd.AddCommand(NewRkgCmd())
+	encCmd.AddCommand(NewAkgCmd())
 }
