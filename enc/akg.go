@@ -64,6 +64,7 @@ Example:
 	return cmd
 }
 
+// getCurve gets the elliptic curve from user input
 func getCurve() elliptic.Curve {
 	switch bits {
 	case 224:

@@ -65,6 +65,7 @@ Example:
 	return cmd
 }
 
+// getSigningMethod gets the JWT signing method from user input
 func getSigningMethod() jwt.SigningMethod {
 	switch method {
 	case "hs384":
@@ -94,6 +95,7 @@ func getSigningMethod() jwt.SigningMethod {
 	}
 }
 
+// readKey reads the JWT secret key from a file, parsing it from PEM if necessary
 func readKey() (interface{}, error) {
 	keyByte, err := os.ReadFile(key)
 	if err != nil {
@@ -134,6 +136,7 @@ func readKey() (interface{}, error) {
 	}
 }
 
+// sign performs the JWT sign operation
 func sign() (string, error) {
 	var v = &jwt.MapClaims{}
 	err := json.Unmarshal(inputBytes, v)
@@ -151,6 +154,7 @@ func sign() (string, error) {
 	return token.SignedString(key)
 }
 
+// verify performs the JWT verify operation
 func verify(tokenString string) (string, error) {
 	token, err := jwt.Parse(tokenString, func(t *jwt.Token) (interface{}, error) {
 		if strings.ToLower(t.Method.Alg()) != method {
