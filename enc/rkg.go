@@ -54,8 +54,8 @@ Example:
 		},
 	}
 	cmd.Flags().IntVarP(&bits, "bits", "b", 2048, "Key bits")
-	cmd.Flags().StringVar(&privKeyPath, "priv", "./priv.key", "Path to store private key")
-	cmd.Flags().StringVar(&pubKeyPath, "pub", "./priv.key", "Path to store private key")
+	cmd.Flags().StringVar(&privKeyPath, "priv", "./priv.pem", "Path to store private key")
+	cmd.Flags().StringVar(&pubKeyPath, "pub", "./pub.pem", "Path to store public key")
 
 	return cmd
 }
@@ -85,9 +85,9 @@ func exportPrivKey(key *rsa.PrivateKey) error {
 
 // exportPubKey writes the public key to a file
 func exportPubKey(key *rsa.PublicKey) error {
-	keyBytes := x509.MarshalPKCS1PublicKey(key)
+	keyBytes, _ := x509.MarshalPKIXPublicKey(key)
 	keyPem := pem.EncodeToMemory(&pem.Block{
-		Type:  "RSA PUBLIC KEY",
+		Type:  "PUBLIC KEY",
 		Bytes: keyBytes,
 	})
 	pubKeyOut, err := os.OpenFile(pubKeyPath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)

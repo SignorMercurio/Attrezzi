@@ -81,8 +81,8 @@ Example:
 			return nil
 		},
 	}
-	cmd.Flags().StringVar(&privKeyPath, "priv", "./priv.key", "Path of existing private key")
-	cmd.Flags().StringVar(&pubKeyPath, "pub", "./pubkey.pub", "Path of existing public key")
+	cmd.Flags().StringVar(&privKeyPath, "priv", "./priv.pem", "Path of existing private key")
+	cmd.Flags().StringVar(&pubKeyPath, "pub", "./pub.pem", "Path of existing public key")
 	cmd.Flags().StringVarP(&rsaMode, "mode", "m", "oaep", "RSA encryption mode: oaep / pkcs1v15")
 	cmd.Flags().StringVar(&hashFunc, "hash", "sha256", "Hash function to use in OAEP encryption: md5 / sha1 / sha256 / sha384 / sha512")
 	cmd.Flags().BoolVarP(&enc, "encrypt", "e", false, "RSA encryption")
@@ -129,12 +129,12 @@ func importPubKey(filename string) (*rsa.PublicKey, error) {
 		return nil, errors.New("decode pubkey PEM")
 	}
 
-	pubKey, err := x509.ParsePKCS1PublicKey(block.Bytes)
+	pubKey, err := x509.ParsePKIXPublicKey(block.Bytes)
 	if err != nil {
 		return nil, errors.Wrap(err, "parse pubkey")
 	}
 
-	return pubKey, nil
+	return pubKey.(*rsa.PublicKey), nil
 }
 
 func init() {

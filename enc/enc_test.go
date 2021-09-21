@@ -28,6 +28,7 @@ func exec(args ...string) {
 		NewRkgCmd(),
 		NewRsaCmd(),
 		NewHshCmd(),
+		NewJwtCmd(),
 	)
 	rootCmd.AddCommand(encCmd)
 
@@ -217,8 +218,8 @@ func TestAES(t *testing.T) {
 func TestRkgAndRsa(t *testing.T) {
 	in_empty := "/dev/null"
 	bla := "blabla/bla.txt"
-	pubKeyOut := "./testdata/pubkey.pub"
-	privKeyOut := "./testdata/priv.key"
+	pubKeyOut := "./testdata/pub.pem"
+	privKeyOut := "./testdata/priv.pem"
 
 	tests := []test.Test{
 		// rkg
@@ -228,20 +229,20 @@ func TestRkgAndRsa(t *testing.T) {
 		// invalid pubkey
 		{Cmd: []string{in, "rsa", "--pub", bla, "--priv", privKeyOut, "-e"}, Dst: ""},
 		// damaged pubkey
-		{Cmd: []string{in, "rsa", "--pub", "./testdata/pubkey_b1.pub", "--priv", privKeyOut, "-e"}, Dst: ""},
+		{Cmd: []string{in, "rsa", "--pub", "./testdata/pub_b1.pem", "--priv", privKeyOut, "-e"}, Dst: ""},
 		// modified pubkey
 		{Cmd: []string{in, "rsa", "--pub", privKeyOut, "--priv", privKeyOut, "-e"}, Dst: ""},
 		// invalid privkey
 		{Cmd: []string{in, "rsa", "--pub", pubKeyOut, "--priv", bla, "-d"}, Dst: ""},
 		// damaged privkey
-		{Cmd: []string{in, "rsa", "--pub", pubKeyOut, "--priv", "./testdata/priv_b1.key", "-d"}, Dst: ""},
+		{Cmd: []string{in, "rsa", "--pub", pubKeyOut, "--priv", "./testdata/priv_b1.pem", "-d"}, Dst: ""},
 		// modified privkey
 		{Cmd: []string{in, "rsa", "--pub", pubKeyOut, "--priv", pubKeyOut, "-d"}, Dst: ""},
 		// rsa-oaep with sha256
 		{Cmd: []string{in, "rsa", "--pub", pubKeyOut, "--priv", privKeyOut, "-e"}, Dst: "*"},
 		{Cmd: []string{out, "rsa", "--pub", pubKeyOut, "--priv", privKeyOut, "-d"}, Dst: src},
 		// wrong privKey
-		{Cmd: []string{out, "rsa", "--pub", pubKeyOut, "--priv", "./testdata/priv_b2.key", "-d"}, Dst: ""},
+		{Cmd: []string{out, "rsa", "--pub", pubKeyOut, "--priv", "./testdata/priv_b2.pem", "-d"}, Dst: ""},
 		// with md5
 		{Cmd: []string{in, "rsa", "--pub", pubKeyOut, "--priv", privKeyOut, "-e", "--hash", "md5"}, Dst: "*"},
 		{Cmd: []string{out, "rsa", "--pub", pubKeyOut, "--priv", privKeyOut, "-d", "--hash", "md5"}, Dst: src},
@@ -280,6 +281,68 @@ func TestHsh(t *testing.T) {
 		// sha512
 		{Cmd: []string{in, "hsh", "--hash", "sha512"}, Dst: "da03b6f9510a7325fdd38677e1332e4179bc99ab4c828e44307434e29e8ac7fcf5a7f0077632797041e689b2f9cd9067d92c49b208255514c66b5bc86ce4e5ec"},
 	}
+	for _, tst := range tests {
+		exec(tst.Cmd...)
+		test.CheckResult(out, tst.Dst, t)
+	}
+}
+
+func TestJwt(t *testing.T) {
+	in := "./testdata/in_jwt.txt"
+	src := `{
+  "id": 0,
+  "name": "merc"
+}`
+	key := "./testdata/in_xor.txt"
+	bla := "blabla/bla.txt"
+	pubKeyOut := "./testdata/pub.pem"
+	privKeyOut := "./testdata/priv.pem"
+
+	tests := []test.Test{
+		// unmarshal json fail
+		{Cmd: []string{key, "jwt", "-k", key, "-s"}, Dst: ""},
+		// read key fail
+		{Cmd: []string{in, "jwt", "-k", bla, "-s"}, Dst: ""},
+		// verify token fail
+		{Cmd: []string{"./testdata/out_jwt_b1.txt", "jwt", "-k", key, "-v"}, Dst: ""},
+		// verify alg fail
+		{Cmd: []string{"./testdata/out_jwt_b2.txt", "jwt", "-k", key, "-v"}, Dst: ""},
+		// hs256
+		{Cmd: []string{in, "jwt", "-k", key, "-s"}, Dst: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MCwibmFtZSI6Im1lcmMifQ.LD8wZ9fHbDe7iWfkfurOW1SDN0dHZYp-xgRLi9YB6H4"},
+		{Cmd: []string{out, "jwt", "-k", key, "-v"}, Dst: src},
+		// hs384
+		{Cmd: []string{in, "jwt", "-k", key, "-s", "-m", "hs384"}, Dst: "eyJhbGciOiJIUzM4NCIsInR5cCI6IkpXVCJ9.eyJpZCI6MCwibmFtZSI6Im1lcmMifQ.N05aYqTGgJY9HlOAjzIxWsElTTopGdSr9AMJ6wZHgGl-s4OH0IKXZwRYpQ475t8a"},
+		{Cmd: []string{out, "jwt", "-k", key, "-v", "-m", "hs384"}, Dst: src},
+		// hs512
+		{Cmd: []string{in, "jwt", "-k", key, "-s", "-m", "hs512"}, Dst: "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpZCI6MCwibmFtZSI6Im1lcmMifQ.Mg45OnClTx0x-ATPe7O6IEwUUd2p9Ib7HPb1yZ6k8vgTcL0P3QqKtJPOfvmE3aybmAttioRw1h46Yghq0YDvjA"},
+		{Cmd: []string{out, "jwt", "-k", key, "-v", "-m", "hs512"}, Dst: src},
+		// rs256
+		// parse privKey fail
+		{Cmd: []string{in, "jwt", "-k", "./testdata/priv_b1.pem", "-s", "-m", "rs256"}, Dst: ""},
+		// parse pubKey fail
+		{Cmd: []string{"./testdata/out_jwt_b2.txt", "jwt", "-k", "./testdata/pub_b1.pem", "-v", "-m", "rs256"}, Dst: ""},
+		// default
+		{Cmd: []string{in, "jwt", "-k", privKeyOut, "-s", "-m", "rs256"}, Dst: "*"},
+		{Cmd: []string{out, "jwt", "-k", pubKeyOut, "-v", "-m", "rs256"}, Dst: src},
+		// rs384
+		{Cmd: []string{in, "jwt", "-k", privKeyOut, "-s", "-m", "rs384"}, Dst: "*"},
+		{Cmd: []string{out, "jwt", "-k", pubKeyOut, "-v", "-m", "rs384"}, Dst: src},
+		// rs512
+		{Cmd: []string{in, "jwt", "-k", privKeyOut, "-s", "-m", "rs512"}, Dst: "*"},
+		{Cmd: []string{out, "jwt", "-k", pubKeyOut, "-v", "-m", "rs512"}, Dst: src},
+		// ps256
+		{Cmd: []string{in, "jwt", "-k", privKeyOut, "-s", "-m", "ps256"}, Dst: "*"},
+		{Cmd: []string{out, "jwt", "-k", pubKeyOut, "-v", "-m", "ps256"}, Dst: src},
+		// ps384
+		{Cmd: []string{in, "jwt", "-k", privKeyOut, "-s", "-m", "ps384"}, Dst: "*"},
+		{Cmd: []string{out, "jwt", "-k", pubKeyOut, "-v", "-m", "ps384"}, Dst: src},
+		// ps512
+		{Cmd: []string{in, "jwt", "-k", privKeyOut, "-s", "-m", "ps512"}, Dst: "*"},
+		{Cmd: []string{out, "jwt", "-k", pubKeyOut, "-v", "-m", "ps512"}, Dst: src},
+		// no action
+		{Cmd: []string{in, "jwt"}, Dst: ""},
+	}
+
 	for _, tst := range tests {
 		exec(tst.Cmd...)
 		test.CheckResult(out, tst.Dst, t)
