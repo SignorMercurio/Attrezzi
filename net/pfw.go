@@ -31,7 +31,7 @@ var (
 	maxBytes = 32 * 1024
 )
 
-// NewPfwCmd represents the Pfw command
+// NewPfwCmd represents the pfw command
 func NewPfwCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "pfw",

@@ -31,7 +31,8 @@ Attrezzi is a CLI tool integrated with multiple features useful for hacking.
   - [x] `jwt` | JWT-related operation
 - [ ] `net` | network-related operations
   - [x] `pfw` | local / remote port forwarding
-  - [ ] `dns` | DNS lookup
+  - [x] `dns` | DNS lookup
+  - [ ] `prx` | proxy
   - [ ] ...
 - [ ] `msc` | miscellaneous operations
   - [x] `uid` | UUID generation
