@@ -20,6 +20,7 @@ import (
 	_ "github.com/SignorMercurio/attrezzi/enc"
 	_ "github.com/SignorMercurio/attrezzi/format"
 	_ "github.com/SignorMercurio/attrezzi/msc"
+	_ "github.com/SignorMercurio/attrezzi/net"
 )
 
 func main() {
