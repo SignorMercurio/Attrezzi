@@ -13,9 +13,9 @@ Attrezzi is a CLI tool integrated with multiple features useful for hacking.
   - [x] `b62` | Base62 encode / decode
   - [x] `b85` | Base85 encode / decode
   - [x] `bsx` | BaseX encode / decode
-  - [x] `hex` | convert string to / from hex
-  - [x] `bin` | convert string to / from binary
-  - [x] `dec` | convert string to / from decimal
+  - [x] `hex` | Convert string to / from hex
+  - [x] `bin` | Convert string to / from binary
+  - [x] `dec` | Convert string to / from decimal
   - [x] `url` | URL encode / decode
   - [x] `htm` | HTML Entity encode / decode
   - [x] `uni` | Unicode conversion
@@ -30,9 +30,9 @@ Attrezzi is a CLI tool integrated with multiple features useful for hacking.
   - [x] `hsh` | Hash function calculation
   - [x] `jwt` | JWT-related operation
 - [ ] `net` | network-related operations
-  - [x] `pfw` | local / remote port forwarding
+  - [x] `pfw` | Local / remote port forwarding
   - [x] `dns` | DNS lookup
-  - [ ] `prx` | proxy
+  - [ ] `prx` | Proxy
   - [ ] ...
 - [ ] `msc` | miscellaneous operations
   - [x] `uid` | UUID generation

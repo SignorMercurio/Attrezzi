@@ -33,8 +33,8 @@ var (
 func NewHexCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "hex",
-		Short: "convert string to / from hex",
-		Long: `convert string to / from hex
+		Short: "Convert string to / from hex",
+		Long: `Convert string to / from hex
 Example:
 	echo -n "hello" | att fmt -o out.txt hex -e --delim="0x" -p
 	att fmt -i in.txt hex -d`,

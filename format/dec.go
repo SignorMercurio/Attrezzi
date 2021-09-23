@@ -28,8 +28,8 @@ import (
 func NewDecCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "dec",
-		Short: "convert string to / from decimal",
-		Long: `convert string to / from decimal
+		Short: "Convert string to / from decimal",
+		Long: `Convert string to / from decimal
 Example:
 	echo -n "hello" | att fmt -o out.txt dec -e --delim="\n"
 	att fmt -i in.txt dec -d`,

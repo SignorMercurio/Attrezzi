@@ -35,8 +35,8 @@ var (
 func NewPfwCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "pfw",
-		Short: "local / remote port forwarding",
-		Long: `local / remote port forwarding
+		Short: "Local / remote port forwarding",
+		Long: `Local / remote port forwarding
 Note:
 	The directions of application data flow and request flow are opposite.
 	"src" means the **application data source**, so "src" also represents the **request destination**.

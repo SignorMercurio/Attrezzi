@@ -32,8 +32,8 @@ const (
 func NewBinCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "bin",
-		Short: "convert string to / from binary",
-		Long: `convert string to / from binary
+		Short: "Convert string to / from binary",
+		Long: `Convert string to / from binary
 Example:
 	echo -n "hello" | att fmt -o out.txt bin -e --delim=" "
 	att fmt -i in.txt bin -d`,
