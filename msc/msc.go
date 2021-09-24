@@ -26,8 +26,8 @@ import (
 )
 
 var (
-	// inputFile  string
-	// inputBytes []byte
+	inputFile  string
+	input      *os.File
 	outputFile string
 	output     io.WriteCloser = os.Stdout
 	mscCmd                    = NewMscCmd()
@@ -40,12 +40,11 @@ func NewMscCmd() *cobra.Command {
 		Short: "msc helps to deal with miscellaneous operations",
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 			var err error
-			// if cmd.Use != "uid" {
-			// 	inputBytes, err = getInput()
-			// 	if err != nil {
-			// 		return err
-			// 	}
-			// }
+			if cmd.Use != "uid" {
+				if err = getInput(); err != nil {
+					return err
+				}
+			}
 
 			if err = getOutput(); err != nil {
 				return err
@@ -58,30 +57,21 @@ func NewMscCmd() *cobra.Command {
 		},
 	}
 
-	// cmd.PersistentFlags().StringVarP(&inputFile, "input", "i", "", "Read input from file")
+	cmd.PersistentFlags().StringVarP(&inputFile, "input", "i", "", "Read input from file")
 	cmd.PersistentFlags().StringVarP(&outputFile, "output", "o", "", "Write output to file")
 
 	return cmd
 }
 
-// getInput gets the input []byte
-// func getInput() ([]byte, error) {
-// 	var err error
-// 	var inputBytes []byte
-// 	input := os.Stdin
-
-// 	if inputFile != "" {
-// 		input, err = os.Open(inputFile)
-// 		if err != nil {
-// 			return nil, errors.Wrap(err, "open input file")
-// 		}
-// 		defer input.Close()
-// 	}
-
-// 	inputBytes, _ = ioutil.ReadAll(input)
-
-// 	return inputBytes, nil
-// }
+// getInput gets the inputFile
+func getInput() error {
+	var err error
+	input, err = os.Open(inputFile)
+	if err != nil {
+		return errors.Wrap(err, "open input file")
+	}
+	return nil
+}
 
 // getOutput gets the output fd
 func getOutput() error {
@@ -99,6 +89,10 @@ func getOutput() error {
 
 func Echo(content interface{}) {
 	fmt.Fprint(output, content)
+}
+
+func Warn(message string) {
+	cmd.Log.Warn(message)
 }
 
 func init() {
