@@ -10,9 +10,9 @@ import (
 )
 
 var (
-	in  = "./testdata/in.txt"
-	out = "./testdata/out.txt"
-	src = "Hello 世界 123"
+	base = "./testdata/"
+	out  = base + "out.txt"
+	bla  = "blabla/bla.txt"
 )
 
 func exec(args ...string) {
@@ -20,6 +20,7 @@ func exec(args ...string) {
 	mscCmd := NewMscCmd()
 	mscCmd.AddCommand(
 		NewUidCmd(),
+		NewJpgCmd(),
 	)
 	rootCmd.AddCommand(mscCmd)
 
@@ -30,11 +31,12 @@ func exec(args ...string) {
 
 func TestMsc(t *testing.T) {
 	cmd.Log.SetOutput(io.Discard)
+	input = nil
 	tests := []test.Test{
 		// open output fail
-		{Cmd: []string{"bla/blabla.txt", "uid"}, Dst: "*"}, // TODO
+		{Cmd: []string{bla, "uid"}, Dst: ""},
 		// open input fail
-		// {Cmd: []string{"bla/blabla.txt", "-o", out, "rot", "-e"}, Dst: ""},
+		{Cmd: []string{out, "-i", bla, "jpg"}, Dst: ""},
 	}
 
 	for _, tst := range tests {
@@ -50,5 +52,19 @@ func TestUid(t *testing.T) {
 	_, err := uuid.FromString(string(uid))
 	if err != nil {
 		t.Error("Failed to Parse generated UUID")
+	}
+}
+
+func TestJpg(t *testing.T) {
+	tests := []test.Test{
+		{Cmd: []string{out, "-i", base + "sample.jpg", "jpg"}, Dst: `Location: (46.241305, 24.849876)`},
+		{Cmd: []string{out, "-i", base + "nogeo.jpg", "jpg"}, Dst: `XResolution: "26856/187"`},
+		{Cmd: []string{out, "-i", base + "err.jpg", "jpg"}, Dst: `GPSLatitude: ["51/1","31/1","53584899/1000000"]`},
+		{Cmd: []string{out, "-i", base + "in.txt", "jpg"}, Dst: ""},
+	}
+
+	for _, tst := range tests {
+		exec(tst.Cmd...)
+		test.CheckContains(out, tst.Dst, t)
 	}
 }
