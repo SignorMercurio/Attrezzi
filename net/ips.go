@@ -26,7 +26,8 @@ import (
 )
 
 var (
-	cidr string
+	cidr         string
+	checkPrivate string
 )
 
 type CIDR struct {
@@ -76,32 +77,45 @@ func NewIpsCmd() *cobra.Command {
 Example:
 	att net ips --cidr 10.0.0.0/24`,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cidr, err := ParseCIDR(cidr)
-			if err != nil {
-				return err
+			if cidr != "" {
+				return parseCIDR()
+			}
+			if checkPrivate != "" {
+				ip := net.ParseIP(checkPrivate)
+				fmt.Println(ip.IsPrivate())
 			}
 
-			network := cidr.ipnet.IP.String()
-			s := fmt.Sprintf(`CIDR: %s
-Network: %s
-Mask: %s
-Range: %s - %s
-Numbers of IP: %d`,
-				cidr.ipnet.String(),
-				network,
-				cidr.Mask(),
-				network,
-				cidr.BroadcastIP(),
-				cidr.Count(),
-			)
-			fmt.Println(s)
 			return nil
 		},
 	}
 
 	cmd.Flags().StringVar(&cidr, "cidr", "", "CIDR")
+	cmd.Flags().StringVar(&checkPrivate, "chk-priv", "", "Check whether the IP address is a private address")
 
 	return cmd
+}
+
+func parseCIDR() error {
+	cidr, err := ParseCIDR(cidr)
+	if err != nil {
+		return errors.Wrap(err, "parse CIDR")
+	}
+
+	network := cidr.ipnet.IP.String()
+	s := fmt.Sprintf(`CIDR: %s
+Network: %s
+Mask: %s
+Range: %s - %s
+Numbers of IP: %d`,
+		cidr.ipnet.String(),
+		network,
+		cidr.Mask(),
+		network,
+		cidr.BroadcastIP(),
+		cidr.Count(),
+	)
+	fmt.Println(s)
+	return nil
 }
 
 func init() {
