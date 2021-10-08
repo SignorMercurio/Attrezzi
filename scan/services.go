@@ -6,6 +6,7 @@ func init() {
 	}
 }
 
+// getService maps a port to a service
 func getService(port int) string {
 	if svc, ok := port2svc[port]; ok {
 		return svc

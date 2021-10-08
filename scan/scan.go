@@ -7,6 +7,13 @@ import (
 	"time"
 )
 
+const (
+	Unknown int = iota
+	Open
+	Closed
+	Filtered
+)
+
 type Result struct {
 	Host     net.IP
 	Open     []int
@@ -16,9 +23,9 @@ type Result struct {
 }
 
 // NewResult returns a new Result based on [host]
-func NewResult(host string) *Result {
-	return &Result{
-		Host: net.ParseIP(host),
+func NewResult(host net.IP) Result {
+	return Result{
+		Host: host,
 	}
 }
 
@@ -44,6 +51,24 @@ func (r *Result) String() string {
 }
 
 type Scanner interface {
-	Start() error
+	Start()
 	Scan(ctx context.Context, ports []int) ([]Result, error)
 }
+
+type portScan struct {
+	ip       net.IP
+	port     int
+	open     chan int
+	filtered chan int
+	closed   chan int
+	done     chan struct{}
+	ctx      context.Context
+}
+
+// type hostScan struct {
+// 	ip     net.IP
+// 	ports  []int
+// 	result chan *Result
+// 	done   chan struct{}
+// 	ctx    context.Context
+// }
