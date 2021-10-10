@@ -1,6 +1,6 @@
 # Attrezzi
 
-Attrezzi is a CLI tool integrated with multiple features useful for hacking.
+Attrezzi is a CLI tool integrated with multiple features useful for hacking (and practising Go).
 
 > Note: Only frequently-used modules are included.
 
