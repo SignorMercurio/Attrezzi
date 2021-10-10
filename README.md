@@ -34,7 +34,7 @@ Attrezzi is a CLI tool integrated with multiple features useful for hacking (and
   - [x] `dns` | DNS lookup
   - [x] `prx` | Proxy
   - [x] `ips` | Show IP ranges
-  - [ ] `psc` | Port scanning
+  - [x] `psc` | Port scanning
   - [ ] ...
 - [ ] `msc` | miscellaneous operations
   - [x] `uid` | UUID generation
