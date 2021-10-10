@@ -65,10 +65,10 @@ type portScan struct {
 	ctx      context.Context
 }
 
-// type hostScan struct {
-// 	ip     net.IP
-// 	ports  []int
-// 	result chan *Result
-// 	done   chan struct{}
-// 	ctx    context.Context
-// }
+type hostScan struct {
+	ip     net.IP
+	ports  []int
+	result chan *Result
+	done   chan struct{}
+	ctx    context.Context
+}

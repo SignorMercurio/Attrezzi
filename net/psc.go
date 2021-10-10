@@ -45,7 +45,7 @@ func NewPscCmd() *cobra.Command {
 		Long: `Port scanning
 Example:
 	att net psc -t 192.168.1.1/24 -p 22,80,443,8000-8888
-	att net psc -t example.com -r 100 --timeout 5 -s connect`,
+	att net psc -t example.com -r 100 --timeout 5 -s syn`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ports, err := parsePorts(portsStr)
 			if err != nil {
@@ -88,7 +88,7 @@ Example:
 	}
 
 	cmd.Flags().StringVarP(&target, "target", "t", "", "Target domain / IP / CIDR")
-	cmd.Flags().StringVarP(&scanType, "scan-type", "s", "syn", "Scan type: connect / syn")
+	cmd.Flags().StringVarP(&scanType, "scan-type", "s", "connect", "Scan type: connect / syn")
 	cmd.Flags().IntVar(&timeout, "timeout", 2, "Scan timeout in seconds")
 	cmd.Flags().IntVarP(&routines, "routines", "r", 1000, "Goroutines to use in scanning")
 	cmd.Flags().StringVarP(&portsStr, "ports", "p", "22,80,443,8000-8888", "Ports to scan")
@@ -99,13 +99,13 @@ Example:
 // create Scanner creates a connect or syn scanner
 func createScanner(targets []net.IP, scanType string, timeout time.Duration, routines int) (scan.Scanner, error) {
 	switch scanType {
-	case "connect":
-		return scan.NewConnectScanner(targets, timeout, routines), nil
-	default:
+	case "syn":
 		if os.Geteuid() > 0 {
 			return nil, errors.New("You'll need root privilege to start an SYN scan.")
 		}
 		return scan.NewSYNScanner(targets, timeout, routines), nil
+	default:
+		return scan.NewConnectScanner(targets, timeout, routines), nil
 	}
 }
 

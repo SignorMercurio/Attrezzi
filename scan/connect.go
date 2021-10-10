@@ -104,12 +104,12 @@ func (cs *ConnectScanner) hostScan(ctx context.Context, host net.IP, ports []int
 				if result.Latency <= 0 {
 					result.Latency = time.Since(start)
 				}
-				result.Filtered = append(result.Open, filtered)
+				result.Filtered = append(result.Filtered, filtered)
 			case closed := <-closedChan:
 				if result.Latency <= 0 {
 					result.Latency = time.Since(start)
 				}
-				result.Closed = append(result.Open, closed)
+				result.Closed = append(result.Closed, closed)
 			}
 		}
 	}()
