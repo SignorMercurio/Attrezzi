@@ -82,6 +82,18 @@ func WrongAddressFormat() {
 	cmd.Log.Panic("Please check the address format.")
 }
 
+func ScanCanceled() {
+	cmd.Log.Info("Canceling scanning...")
+}
+
+func ScanStart() {
+	cmd.Log.Info("Starting scanning...")
+}
+
+func ScanFinished(duration string) {
+	cmd.Log.Infof("Scan finished in %s.", duration)
+}
+
 func init() {
 	cmd.RootCmd.AddCommand(netCmd)
 }

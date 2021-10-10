@@ -1,6 +1,6 @@
 # Attrezzi
 
-Attrezzi is a CLI tool integrated with multiple features useful for hacking.
+Attrezzi is a CLI tool integrated with multiple features useful for hacking (and practising Go).
 
 > Note: Only frequently-used modules are included.
 
@@ -34,6 +34,7 @@ Attrezzi is a CLI tool integrated with multiple features useful for hacking.
   - [x] `dns` | DNS lookup
   - [x] `prx` | Proxy
   - [x] `ips` | Show IP ranges
+  - [ ] `psc` | Port scanning
   - [ ] ...
 - [ ] `msc` | miscellaneous operations
   - [x] `uid` | UUID generation

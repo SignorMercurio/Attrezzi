@@ -40,7 +40,7 @@ func (c *CIDR) Mask() string {
 	return net.IP(mask).String()
 }
 
-func (c *CIDR) BroadcastIP() string {
+func (c *CIDR) BroadcastIP() net.IP {
 	mask, network := c.ipnet.Mask, c.ipnet.IP
 	maskLen, networkLen := len(mask), len(network)
 	b := network
@@ -51,7 +51,7 @@ func (c *CIDR) BroadcastIP() string {
 		b[idx] = network[idx] | ^mask[maskIdx]
 	}
 
-	return b.String()
+	return b
 }
 
 func (c *CIDR) Count() *big.Int {
@@ -98,7 +98,7 @@ Example:
 func parseCIDR() error {
 	cidr, err := ParseCIDR(cidr)
 	if err != nil {
-		return errors.Wrap(err, "parse CIDR")
+		return err
 	}
 
 	network := cidr.ipnet.IP.String()
@@ -111,7 +111,7 @@ Numbers of IP: %d`,
 		network,
 		cidr.Mask(),
 		network,
-		cidr.BroadcastIP(),
+		cidr.BroadcastIP().String(),
 		cidr.Count(),
 	)
 	fmt.Println(s)
