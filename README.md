@@ -1,8 +1,8 @@
 # Attrezzi
 
-Attrezzi is a CLI tool integrated with multiple features useful for hacking (and practising Go).
+**NOTE: This repo is now mainly used for testing purposes.**
 
-> Note: Only frequently-used modules are included.
+Attrezzi is a CLI tool integrated with multiple features useful for hacking (and practising Go).
 
 ## Modules
 
