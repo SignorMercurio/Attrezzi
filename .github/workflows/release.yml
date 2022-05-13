@@ -17,7 +17,9 @@ jobs:
       - name: Install libpcap
         run: sudo apt-get update && sudo apt-get install -y libpcap-dev
       - name: Build Artifact
-        run: mkdir -p _output/darwin/arm64 && go build -o _output/darwin/arm64/attrezzi
+        run: |
+          mkdir -p _output/darwin/arm64 
+          && go build -o _output/darwin/arm64/attrezzi
       - name: Publish Artifact
         uses: actions/upload-artifact@v2.2.4
         with:
@@ -29,5 +31,5 @@ jobs:
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: _output/darwin/amd64/attrezzi/attrezzi.darwin_amd64.zip
+          file: attrezzi.darwin_amd64.zip
           tag: ${{ github.ref }}
