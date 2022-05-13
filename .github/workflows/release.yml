@@ -1,0 +1,33 @@
+name: Release
+
+on:
+  create
+  
+jobs:
+  build-binary-darwin-amd64-artifact:
+    name:  "🧳 Darwin AMD64 Artifact"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.18.1
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: Install libpcap
+        run: sudo apt-get update && sudo apt-get install -y libpcap-dev
+      - name: Build Artifact
+        run: go build -v ./...
+      - name: Publish Artifact
+        uses: actions/upload-artifact@v2.2.4
+        with:
+          name: attrezzi.darwin_amd64
+          path: _output/darwin/amd64/attrezzi
+          retention-days: 5
+          if-no-files-found: error
+      - name: Upload binaries to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: _output/darwin/amd64/attrezzi/attrezzi.darwin_amd64.zip
+          tag: ${{ github.ref }}
