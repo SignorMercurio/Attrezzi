@@ -17,9 +17,7 @@ jobs:
       - name: Install libpcap
         run: sudo apt-get update && sudo apt-get install -y libpcap-dev
       - name: Build Artifact
-        run: |
-          mkdir -p _output/darwin/arm64 
-          && go build -o _output/darwin/arm64/attrezzi
+        run: mkdir -p _output/darwin/arm64 && go build -o _output/darwin/arm64/attrezzi
       - name: Publish Artifact
         uses: actions/upload-artifact@v2.2.4
         with:
