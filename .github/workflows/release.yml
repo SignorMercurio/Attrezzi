@@ -26,7 +26,8 @@ jobs:
           retention-days: 5
           if-no-files-found: error
       - name: Compress binaries into zip files
-        run: cd _output/darwin/arm64 && zip attrezzi.darwin_arm64.zip attrezzi
+        working-directory: _output/darwin/arm64
+        run: zip attrezzi.darwin_arm64.zip attrezzi
       - name: Upload zip files to release
         uses: svenstaro/upload-release-action@v2
         with:
